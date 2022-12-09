@@ -35,7 +35,9 @@ export const validatePassword = (rule: Rule, value: string) => {
  */
 export const validateMobile = (rule: Rule, value: string) => {
   const reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/
-  if (!reg.test(value)) {
+  if (!value) {
+    return Promise.reject("手机号不能为空")
+  } else if (!reg.test(value)) {
     return Promise.reject("手机号格式错误")
   } else {
     return Promise.resolve()

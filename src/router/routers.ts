@@ -2,6 +2,6 @@ export const single = [
   {
     path: "/login",
     name: "login",
-    component: () => import("../views/single/login.vue")
+    component: () => import("../views/basic/login.vue")
   }
 ]

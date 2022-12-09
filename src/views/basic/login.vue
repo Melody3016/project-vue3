@@ -16,50 +16,55 @@
                 <template #tab>
                   <span>
                     <user-outlined />
-                    {{ $t('usernameLogin') }}
+                    {{ $t("usernameLogin") }}
                   </span>
                 </template>
                 <a-form
-                  ref="usernameLoginForm"
-                  :model="form"
-                  :rules="rules"
+                  :model="accLoginModel"
+                  :rules="accLoginRules"
                   class="form"
                 >
-                  <a-form-item name="username">
+                  <a-form-item
+                    name="username"
+                    hasFeedback
+                    v-bind="validateInfosAcc.username"
+                  >
                     <a-input
-                      v-model="form.username"
+                      v-model:value="accLoginModel.username"
                       size="large"
-                      clearable
+                      allowClear
                       placeholder="请输入用户名"
-                      autocomplete="off"
                     >
                       <template #prefix>
                         <user-outlined type="user" />
                       </template>
                     </a-input>
                   </a-form-item>
-                  <a-form-item name="password">
+                  <a-form-item
+                    name="password"
+                    hasFeedback
+                    v-bind="validateInfosAcc.password"
+                  >
                     <a-input-password
-                      v-model="form.password"
+                      v-model:value="accLoginModel.password"
                       size="large"
                       placeholder="请输入密码"
-                      autocomplete="off"
                     >
                       <template #prefix>
                         <lock-outlined />
                       </template>
                     </a-input-password>
                   </a-form-item>
-                  <a-form-item name="imgCode">
+                  <a-form-item name="imgCode" v-bind="validateInfosAcc.imgCode">
                     <a-row
                       type="flex"
                       justify="space-between"
                       style="align-items: center; overflow: hidden"
                     >
                       <a-input
-                        v-model="form.imgCode"
+                        v-model:value="accLoginModel.imgCode"
                         size="large"
-                        clearable
+                        allowClear
                         placeholder="请输入图片验证码"
                         :maxlength="10"
                         class="input-verify"
@@ -73,7 +78,13 @@
                           :src="captchaImg"
                           @click="getCaptchaImg"
                           alt="加载验证码失败"
-                          style="width: 110px; cursor: pointer; display: block"
+                          style="
+                            width: 110px;
+                            height: 32px;
+                            line-height: 32px;
+                            cursor: pointer;
+                            display: block;
+                          "
                         />
                       </div>
                     </a-row>
@@ -84,20 +95,19 @@
                 <template #tab>
                   <span>
                     <phone-outlined />
-                    {{ $t('mobileLogin') }}
+                    {{ $t("mobileLogin") }}
                   </span>
                 </template>
                 <a-form
-                  ref="mobileLoginForm"
-                  :model="form"
-                  :rules="rules"
+                  :model="mobLoginModel"
+                  :rules="mobLoginRules"
                   class="form"
                 >
-                  <a-form-item name="mobile">
+                  <a-form-item name="mobile" v-bind="validateInfosMob.mobile">
                     <a-input
-                      v-model="form.mobile"
+                      v-model:value="mobLoginModel.mobile"
                       size="large"
-                      clearable
+                      allowClear
                       placeholder="请输入手机号"
                     >
                       <template #prefix>
@@ -105,12 +115,12 @@
                       </template>
                     </a-input>
                   </a-form-item>
-                  <a-form-item name="code" :error="errorCode">
+                  <a-form-item name="code" v-bind="validateInfosMob.code">
                     <a-row type="flex" justify="space-between">
                       <a-input
-                        v-model="form.code"
+                        v-model:value="mobLoginModel.code"
                         size="large"
-                        clearable
+                        allowClear
                         placeholder="请输入短信验证码"
                         :maxlength="6"
                         class="input-verify"
@@ -192,9 +202,9 @@
                   <dingding-outlined />
                 </div>
                 <up-outlined
-                  v-show="!showMore"
+                  v-show="showMore"
                   class="other-icon"
-                  @click="showMore = true"
+                  @click="showMore = false"
                 />
               </div>
               <router-link to="/regist">
@@ -211,10 +221,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue"
-import { useI18n } from "vue-i18n"
-import type { FormInstance } from "ant-design-vue"
-import { Modal } from "ant-design-vue"
+import { ref, reactive, onMounted, toRaw } from "vue"
+import type { Rule } from "ant-design-vue/es/form"
+import { Modal, Form } from "ant-design-vue"
 import {
   UserOutlined,
   PhoneOutlined,
@@ -232,39 +241,52 @@ import CountDownButton from "@/components/xboot/count-down-button.vue"
 import Header from "@/components/common/header.vue"
 import Footer from "@/components/common/footer.vue"
 import { validateMobile } from "@/libs/validate"
-interface FormState {
-  username: string
-  password: string
-  mobile: string
-  code: string
-  imgCode: string
-}
 
-const mobileLoginForm = ref<FormInstance>()
-const { t } = useI18n() // use as global scope
+// UI
 const showMore = ref(false)
-const captchaId = ref("")
-const captchaImg = ref("")
-const loadingCaptcha = ref(true)
-const error = ref(false)
-const tabKey = ref("1")
 const saveLogin = ref(true)
-const getSms = ref("获取验证码")
+const tabKey = ref("1")
 const loading = ref(false)
 const sending = ref(false)
-const errorCode = ref("")
-const form = reactive<FormState>({
-  username: "admin、test、test2（支持邮箱/手机登录）",
-  password: "123456",
-  mobile: "",
-  code: "",
+
+onMounted(() => {
+  relatedLogin()
+  getCaptchaImg()
+})
+const useForm = Form.useForm
+
+// 生成验证码
+const loadingCaptcha = ref(true)
+const captchaImg = ref("")
+const captchaId = ref("")
+const getCaptchaImg = () => {
+  loadingCaptcha.value = true
+  // 获取验证码
+  // initCaptcha().then((res) => {
+  //   this.loadingCaptcha = false;
+  //   if (res.success) {
+  //     this.captchaId = res.result;
+  //     this.captchaImg = drawCodeImage + this.captchaId;
+  //   }
+  // });
+}
+
+// 账户密码登录
+interface AccLoginState {
+  username: string
+  password: string
+  imgCode: string
+}
+const accLoginModel = reactive<AccLoginState>({
+  username: "",
+  password: "",
   imgCode: ""
 })
-const rules = reactive({
+const accLoginRules: Record<string, Rule[]> = reactive({
   username: [
     {
       required: true,
-      message: "账号不能为空",
+      message: "用户名不能为空",
       trigger: "change"
     }
   ],
@@ -281,34 +303,69 @@ const rules = reactive({
       message: "验证码不能为空",
       trigger: "change"
     }
-  ],
+  ]
+})
+const { validate: validateAcc, validateInfos: validateInfosAcc } = useForm(
+  accLoginModel,
+  accLoginRules,
+  {
+    onValidate: (...args) => console.log(...args)
+  }
+)
+// 手机验证码登录
+interface MobLoginState {
+  mobile: string
+  code: string
+}
+const mobLoginModel = reactive<MobLoginState>({
+  mobile: "",
+  code: ""
+})
+const mobLoginRules: Record<string, Rule[]> = reactive({
   mobile: [
     {
       required: true,
-      message: "手机号不能为空",
-      trigger: "change"
-    },
-    {
       validator: validateMobile,
+      trigger: "change"
+    }
+  ],
+  code: [
+    {
+      required: true,
+      message: "验证码不能为空",
       trigger: "change"
     }
   ]
 })
-const getCaptchaImg = () => {
-  loadingCaptcha.value = true
-  // 获取验证码
-  // initCaptcha().then((res) => {
-  //   this.loadingCaptcha = false;
-  //   if (res.success) {
-  //     this.captchaId = res.result;
-  //     this.captchaImg = drawCodeImage + this.captchaId;
-  //   }
-  // });
-}
-const sendSmsCode = () => {
-  // 发送短信验证码
-}
+const { validate: validateMob, validateInfos: validateInfosMob } = useForm(
+  mobLoginModel,
+  mobLoginRules,
+  {
+    onValidate: (...args) => console.log(...args)
+  }
+)
+
 const submitLogin = () => {
+  if (tabKey.value === "1") {
+    // 账号密码登录
+    validateAcc()
+      .then(() => {
+        console.log(toRaw(accLoginModel), "accLoginModel")
+      })
+      .catch((err) => {
+        console.log("error", err)
+      })
+  } else {
+    // 手机验证码登录
+    validateMob()
+      .then(() => {
+        console.log(toRaw(mobLoginModel), "mobLoginModel")
+      })
+      .catch((err) => {
+        console.log("error", err)
+      })
+  }
+
   // if (tabName.value === "username") {
   //   this.$refs.usernameLoginForm.validate((valid) => {
   //     if (valid) {
@@ -471,6 +528,12 @@ const submitLogin = () => {
   //   });
   // }
 }
+
+// 未实现
+const getSms = ref("获取验证码")
+const sendSmsCode = () => {
+  // 发送短信验证码
+}
 const toGithubLogin = () => {
   Modal.info({
     title: "抱歉，请获取完整版",
@@ -514,10 +577,6 @@ const handleDropDown = () => {
   })
 }
 const relatedLogin = () => {}
-onMounted(() => {
-  relatedLogin()
-  getCaptchaImg()
-})
 </script>
 
 <style scoped lang="scss">
@@ -526,7 +585,7 @@ onMounted(() => {
   background: url("@/assets/background.svg");
   background-color: #f0f2f5;
 
-  .ivu-tabs-nav-container {
+  :deep(.ant-tabs-nav-wrap) {
     line-height: 2;
     font-size: 17px;
     box-sizing: border-box;
@@ -545,8 +604,23 @@ onMounted(() => {
   }
 
   .code-image {
-    .ivu-spin-fix .ivu-spin-main {
-      height: 20px;
+    height: 32px;
+    :deep(.ant-spin-spinning) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 8;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);
+      .ant-spin-dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        font-size: 17px;
+      }
     }
   }
 
