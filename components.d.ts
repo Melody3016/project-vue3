@@ -25,6 +25,7 @@ declare module '@vue/runtime-core' {
     ASteps: typeof import("ant-design-vue/es")["Steps"]
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
     ATabs: typeof import('ant-design-vue/es')['Tabs']
+    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     CountDownButton: typeof import('./src/components/xboot/count-down-button.vue')['default']
     Footer: typeof import('./src/components/common/footer.vue')['default']
     Header: typeof import('./src/components/common/header.vue')['default']

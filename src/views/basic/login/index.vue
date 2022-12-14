@@ -10,7 +10,7 @@
       <a-col class="layout">
         <div>
           <Header></Header>
-          <div>
+          <div style="position: relative">
             <a-tabs v-model:activeKey="tabKey" :animated="true" size="large">
               <a-tab-pane key="1">
                 <template #tab>
@@ -142,6 +142,12 @@
                 </a-form>
               </a-tab-pane>
             </a-tabs>
+            <a-tooltip @click="toQrCodeLogin" placement="rightTop">
+              <template #title>
+                <span>{{ $t("qrCodeTip") }}</span>
+              </template>
+              <qrcode-outlined />
+            </a-tooltip>
 
             <a-row type="flex" justify="space-between" align="middle">
               <a-checkbox v-model="saveLogin" size="large">{{
@@ -221,7 +227,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, toRaw, computed } from "vue"
+import { ref, reactive, onMounted, toRaw } from "vue"
 import type { Rule } from "ant-design-vue/es/form"
 import { Modal, Form } from "ant-design-vue"
 import {
@@ -235,7 +241,8 @@ import {
   DingdingOutlined,
   UpOutlined,
   LockOutlined,
-  MailOutlined
+  MailOutlined,
+  QrcodeOutlined
 } from "@ant-design/icons-vue"
 import { validateMobile } from "@/libs/validate"
 import {
@@ -529,6 +536,10 @@ const submitLogin = () => {
   // }
 }
 
+const toQrCodeLogin = () => {
+  console.log(111)
+}
+
 // 未实现
 // const getSms = computed(() => t("getSms"))
 const sendSmsCode = () => {
@@ -655,10 +666,14 @@ const relatedLogin = () => {}
     :deep(.ant-tabs) {
       .ant-tabs-nav-wrap {
         display: block;
-        .ant-tabs-tab {
-          flex: 1;
-          .ant-tabs-tab-btn {
-            margin: 0 auto;
+        .ant-tabs-nav-list {
+          width: 90%;
+          .ant-tabs-tab {
+            flex: 1;
+            font-size: 17px;
+            .ant-tabs-tab-btn {
+              margin: 0 auto;
+            }
           }
         }
       }
@@ -670,6 +685,27 @@ const relatedLogin = () => {}
         #form_item_imgCode {
           padding-left: 0;
         }
+      }
+    }
+
+    :deep(.anticon-qrcode) {
+      position: absolute;
+      top: 18px;
+      right: 0;
+      font-size: 34px;
+      color: #1da57a;
+      cursor: pointer;
+      transition: all 0.3s ease 0.1s;
+
+      &:hover {
+        transform: scale(1.5);
+        svg {
+          clip-path: none;
+          // clip-path: polygon(-85% 0%, 0% -100%, 200% 100%, 0% 100%);
+        }
+      }
+      svg {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0);
       }
     }
   }

@@ -93,5 +93,6 @@
   "phonePlaceholder": "Please enter your phone number",
   "smsPlaceholder": "Please enter the code",
   "phoneResetPwd": "Reset password using phone number",
-  "emailResetPwd": "Reset password using email"
+  "emailResetPwd": "Reset password using email",
+  "qrCodeTip": "XBoot App Scan code to log in"
 }
