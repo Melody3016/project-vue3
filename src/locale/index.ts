@@ -1,26 +1,33 @@
 import { createI18n } from "vue-i18n"
-import zhLocale from "./lang/zh-CN"
-import enLocale from "./lang/en-US"
-
+import { setStore, getStore } from "@/libs/localStroage"
+import zhLocale from "./lang/zh-CN.json"
+import enLocale from "./lang/en-US.json"
+import jaLocale from "./lang/ja-JP.json"
+import { Langs } from "@/utils/enums"
 // 根据浏览器信息自动设置语言
 const navLang = navigator.language
-const localLang = navLang == "zh-CN" || navLang == "en-US" ? navLang : false
-if (localStorage.lang == "undefined") {
-  localStorage.lang = ""
+const localLang =
+  navLang == Langs.zhCN || navLang == Langs.enUS || navLang == Langs.jaJP
+    ? navLang
+    : false
+if (getStore("lang") == "undefined") {
+  setStore("lang", "")
 }
-const lang = localStorage.lang || localLang || "zh-CN"
+const lang = localStorage.lang || localLang || Langs.zhCN
 if (!localStorage.lang) {
-  localStorage.lang = lang
+  setStore("lang", lang)
 }
-
+// Type-define 'zh-CN' as the master schema for the resource
+type MessageSchema = typeof zhLocale
 // 多语言配置 vue-i18n
 const messages = {
-  "zh-CN": zhLocale,
-  "en-US": enLocale
+  [Langs.zhCN]: zhLocale,
+  [Langs.enUS]: enLocale,
+  [Langs.jaJP]: jaLocale
 }
-const i18n = createI18n({
-  allowComposition: true, // you need to specify that!
+const i18n = createI18n<[MessageSchema], Langs.zhCN | Langs.enUS | Langs.jaJP>({
   locale: lang,
+  legacy: false,
   messages
 })
 

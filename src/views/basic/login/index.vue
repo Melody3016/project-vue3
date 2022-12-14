@@ -11,7 +11,7 @@
         <div>
           <Header></Header>
           <div>
-            <a-tabs v-model:activeKey="tabKey">
+            <a-tabs v-model:activeKey="tabKey" :animated="true" size="large">
               <a-tab-pane key="1">
                 <template #tab>
                   <span>
@@ -30,10 +30,10 @@
                     v-bind="validateInfosAcc.username"
                   >
                     <a-input
+                      :placeholder="$t('userPlaceholder')"
                       v-model:value="accLoginModel.username"
                       size="large"
                       allowClear
-                      placeholder="请输入用户名"
                     >
                       <template #prefix>
                         <user-outlined type="user" />
@@ -46,9 +46,9 @@
                     v-bind="validateInfosAcc.password"
                   >
                     <a-input-password
+                      :placeholder="$t('pwdPlaceholder')"
                       v-model:value="accLoginModel.password"
                       size="large"
-                      placeholder="请输入密码"
                     >
                       <template #prefix>
                         <lock-outlined />
@@ -65,7 +65,7 @@
                         v-model:value="accLoginModel.imgCode"
                         size="large"
                         allowClear
-                        placeholder="请输入图片验证码"
+                        :placeholder="$t('codePlaceholder')"
                         :maxlength="10"
                         class="input-verify"
                       />
@@ -76,8 +76,8 @@
                         <a-spin v-if="loadingCaptcha"></a-spin>
                         <img
                           :src="captchaImg"
+                          :alt="$t('codeInitError')"
                           @click="getCaptchaImg"
-                          alt="加载验证码失败"
                           style="
                             width: 110px;
                             height: 32px;
@@ -105,10 +105,10 @@
                 >
                   <a-form-item name="mobile" v-bind="validateInfosMob.mobile">
                     <a-input
+                      :placeholder="$t('phonePlaceholder')"
                       v-model:value="mobLoginModel.mobile"
                       size="large"
                       allowClear
-                      placeholder="请输入手机号"
                     >
                       <template #prefix>
                         <phone-outlined />
@@ -121,7 +121,7 @@
                         v-model:value="mobLoginModel.code"
                         size="large"
                         allowClear
-                        placeholder="请输入短信验证码"
+                        :placeholder="$t('smsPlaceholder')"
                         :maxlength="6"
                         class="input-verify"
                       >
@@ -132,7 +132,7 @@
                       <CountDownButton
                         ref="countDown"
                         @on-click="sendSmsCode"
-                        :autoCountDown="false"
+                        :autoCountDown="true"
                         size="large"
                         :loading="sending"
                         :text="getSms"
@@ -151,12 +151,12 @@
                 <a class="forget-pass">{{ $t("forgetPass") }}</a>
                 <template #overlay>
                   <a-menu>
-                    <a-menu-item name="resetByMobile"
-                      >使用手机号重置密码(付费)</a-menu-item
-                    >
-                    <a-menu-item name="resetByEmail"
-                      >使用邮箱重置密码(付费)</a-menu-item
-                    >
+                    <a-menu-item name="resetByMobile">{{
+                      $t("phoneResetPwd")
+                    }}</a-menu-item>
+                    <a-menu-item name="resetByEmail">{{
+                      $t("emailResetPwd")
+                    }}</a-menu-item>
                   </a-menu>
                 </template>
               </a-dropdown>
@@ -215,13 +215,13 @@
         </div>
         <Footer></Footer>
       </a-col>
-      <!-- <LangSwitch /> -->
+      <LangSwitch />
     </a-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, toRaw } from "vue"
+import { ref, reactive, onMounted, toRaw, computed } from "vue"
 import type { Rule } from "ant-design-vue/es/form"
 import { Modal, Form } from "ant-design-vue"
 import {
@@ -237,11 +237,26 @@ import {
   LockOutlined,
   MailOutlined
 } from "@ant-design/icons-vue"
+import { validateMobile } from "@/libs/validate"
+import {
+  getSms,
+  userRuleEmpty,
+  pwdRuleEmpty,
+  codeRuleEmpty
+} from "@/utils/langs"
 import CountDownButton from "@/components/xboot/count-down-button.vue"
+import LangSwitch from "@/components/common/lang-switch.vue"
 import Header from "@/components/common/header.vue"
 import Footer from "@/components/common/footer.vue"
-import { validateMobile } from "@/libs/validate"
+import useNotice from "./useNotice"
+import useCaptchaImg from "./useCaptchaImg"
 
+onMounted(() => {
+  relatedLogin()
+  getNoticeInfo()
+  getCaptchaImg()
+})
+const useForm = Form.useForm
 // UI
 const showMore = ref(false)
 const saveLogin = ref(true)
@@ -249,27 +264,11 @@ const tabKey = ref("1")
 const loading = ref(false)
 const sending = ref(false)
 
-onMounted(() => {
-  relatedLogin()
-  getCaptchaImg()
-})
-const useForm = Form.useForm
+// 生成通知提醒框
+const { getNoticeInfo } = useNotice()
 
 // 生成验证码
-const loadingCaptcha = ref(true)
-const captchaImg = ref("")
-const captchaId = ref("")
-const getCaptchaImg = () => {
-  loadingCaptcha.value = true
-  // 获取验证码
-  // initCaptcha().then((res) => {
-  //   this.loadingCaptcha = false;
-  //   if (res.success) {
-  //     this.captchaId = res.result;
-  //     this.captchaImg = drawCodeImage + this.captchaId;
-  //   }
-  // });
-}
+const { loadingCaptcha, captchaImg, captchaId, getCaptchaImg } = useCaptchaImg()
 
 // 账户密码登录
 interface AccLoginState {
@@ -286,21 +285,21 @@ const accLoginRules: Record<string, Rule[]> = reactive({
   username: [
     {
       required: true,
-      message: "用户名不能为空",
+      message: userRuleEmpty.value,
       trigger: "change"
     }
   ],
   password: [
     {
       required: true,
-      message: "密码不能为空",
+      message: pwdRuleEmpty.value,
       trigger: "change"
     }
   ],
   imgCode: [
     {
       required: true,
-      message: "验证码不能为空",
+      message: codeRuleEmpty.value,
       trigger: "change"
     }
   ]
@@ -312,6 +311,7 @@ const { validate: validateAcc, validateInfos: validateInfosAcc } = useForm(
     onValidate: (...args) => console.log(...args)
   }
 )
+
 // 手机验证码登录
 interface MobLoginState {
   mobile: string
@@ -332,7 +332,7 @@ const mobLoginRules: Record<string, Rule[]> = reactive({
   code: [
     {
       required: true,
-      message: "验证码不能为空",
+      message: codeRuleEmpty.value,
       trigger: "change"
     }
   ]
@@ -530,7 +530,7 @@ const submitLogin = () => {
 }
 
 // 未实现
-const getSms = ref("获取验证码")
+// const getSms = computed(() => t("getSms"))
 const sendSmsCode = () => {
   // 发送短信验证码
 }
@@ -559,12 +559,6 @@ const toWeixinLogin = () => {
   })
 }
 const toDingdingLogin = () => {
-  Modal.info({
-    title: "抱歉，请获取完整版",
-    content: "支付链接: http://xpay.exrick.cn/pay?xboot"
-  })
-}
-const toWorkwechatLogin = () => {
   Modal.info({
     title: "抱歉，请获取完整版",
     content: "支付链接: http://xpay.exrick.cn/pay?xboot"
@@ -657,6 +651,27 @@ const relatedLogin = () => {}
     justify-content: space-between;
     width: 368px;
     height: 100%;
+
+    :deep(.ant-tabs) {
+      .ant-tabs-nav-wrap {
+        display: block;
+        .ant-tabs-tab {
+          flex: 1;
+          .ant-tabs-tab-btn {
+            margin: 0 auto;
+          }
+        }
+      }
+      .ant-tabs-content {
+        transition: margin 0.5s;
+        .ant-input {
+          padding-left: 15px;
+        }
+        #form_item_imgCode {
+          padding-left: 0;
+        }
+      }
+    }
   }
 }
 </style>

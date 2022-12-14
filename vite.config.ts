@@ -37,5 +37,20 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js"
     }
+  },
+  server: {
+    proxy: {
+      // 带选项写法：http://localhost:5173/api/bar -> http://jsonplaceholder.typicode.com/bar
+      "/my-web": {
+        target: "http://localhost:4000",
+        changeOrigin: true
+        // rewrite: (path) => path.replace(/^\/api/, "")
+      },
+      "/xboot": {
+        target: "http://localhost:8888",
+        changeOrigin: true
+        // rewrite: (path) => path.replace(/^\/api/, "")
+      }
+    }
   }
 })

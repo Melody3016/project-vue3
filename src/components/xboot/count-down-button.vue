@@ -10,6 +10,7 @@
       :icon="icon"
       :shape="shape"
       :long="long"
+      :block="block"
       @click="handleClick"
       >{{ buttonText }}</a-button
     >
@@ -18,11 +19,18 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from "vue"
+import type { PropType } from "vue"
+import type {
+  ButtonType,
+  ButtonSize,
+  ButtonShape
+} from "ant-design-vue/es/button"
+import { submitText, suffixText } from "@/utils/langs"
 
 const props = defineProps({
   text: {
     type: String,
-    default: "提交"
+    default: submitText.value
   },
   autoCountDown: {
     type: Boolean,
@@ -34,10 +42,10 @@ const props = defineProps({
   },
   suffixText: {
     type: String,
-    default: "秒后重试"
+    default: "s"
   },
-  type: String,
-  size: String,
+  type: String as PropType<ButtonType>,
+  size: String as PropType<ButtonSize>,
   loading: {
     type: Boolean,
     default: false
@@ -51,10 +59,14 @@ const props = defineProps({
     default: false
   },
   icon: String,
-  shape: String,
+  shape: String as PropType<ButtonShape>,
   long: {
     type: Boolean,
     default: false
+  },
+  block: {
+    type: Boolean,
+    default: true
   }
 })
 const emit = defineEmits<{

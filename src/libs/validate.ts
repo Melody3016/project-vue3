@@ -1,4 +1,13 @@
 import type { Rule } from "ant-design-vue/es/form"
+import {
+  userRuleLen,
+  userRuleType,
+  pwdRuleLen,
+  phoneRuleEmpty,
+  phoneRuleType,
+  idCardRuleType
+} from "@/utils/langs"
+
 /**
  * 用户名
  * @param rule 验证规则（不含特殊字符）
@@ -7,9 +16,9 @@ import type { Rule } from "ant-design-vue/es/form"
 export const validateUsername = (rule: Rule, value: string) => {
   const reg = /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,16}$/
   if (value.length > 16) {
-    return Promise.reject("长度不能超过16个字符")
+    return Promise.reject(userRuleLen.value)
   } else if (!reg.test(value)) {
-    return Promise.reject("仅支持大小写英文、中文和下划线_")
+    return Promise.reject(userRuleType.value)
   } else {
     return Promise.resolve()
   }
@@ -22,7 +31,7 @@ export const validateUsername = (rule: Rule, value: string) => {
  */
 export const validatePassword = (rule: Rule, value: string) => {
   if (value.length < 6) {
-    return Promise.reject("密码长度不得小于6位")
+    return Promise.reject(pwdRuleLen.value)
   } else {
     return Promise.resolve()
   }
@@ -36,9 +45,9 @@ export const validatePassword = (rule: Rule, value: string) => {
 export const validateMobile = (rule: Rule, value: string) => {
   const reg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/
   if (!value) {
-    return Promise.reject("手机号不能为空")
+    return Promise.reject(phoneRuleEmpty.value)
   } else if (!reg.test(value)) {
-    return Promise.reject("手机号格式错误")
+    return Promise.reject(phoneRuleType.value)
   } else {
     return Promise.resolve()
   }
@@ -53,7 +62,7 @@ export const validateIDCard = (rule: Rule, value: string) => {
   const reg =
     /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
   if (!reg.test(value)) {
-    return Promise.reject("身份证号码格式错误")
+    return Promise.reject(idCardRuleType.value)
   } else {
     return Promise.resolve()
   }
