@@ -13,12 +13,24 @@ export const drawCodeImage = `${xbootUrl}/common/captcha/draw/`
 
 // 通知提醒框
 export const noticeReq = () => {
-  return getNoAuthRequest<INoticeRes>("/setting/notice")
+  return getNoAuthRequest<IData<INoticeRes>>("/setting/notice")
 }
 
 // 获取验证码
 export const initCaptcha = () => {
-  return getNoAuthRequest<string>("/common/captcha/init")
+  return getNoAuthRequest<IData<string>>("/common/captcha/init")
+}
+
+// 获取登录二维码url
+export const getLoginQRCode = () => {
+  return getNoAuthRequest<IData<string>>("/auth/getLoginQRCode")
+}
+
+// 检查二维码状态
+export const checkQRStatus = (checkToken: string) => {
+  return getNoAuthRequest<IData<ICheckQRStatusRes>>(
+    `/auth/checkQRStatus/${checkToken}`
+  )
 }
 
 // 登陆

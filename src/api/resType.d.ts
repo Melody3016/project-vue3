@@ -7,11 +7,17 @@ interface IData<R = any> {
   result?: R
 }
 
-// notice接口返回类型
+// 通知提醒框接口返回类型
 interface INoticeRes {
   content: string
   duration: number
   open: boolean
   position: string
   title: string
+}
+
+// 检查二维码状态接口返回类型
+interface ICheckQRStatusRes {
+  accessToken: string | null
+  status: string
 }

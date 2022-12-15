@@ -11,8 +11,8 @@ export default () => {
       loadingCaptcha.value = true
       const res = await initCaptcha()
       loadingCaptcha.value = false
-      if (res) {
-        captchaId.value = res
+      if (res.result) {
+        captchaId.value = res.result
         captchaImg.value = drawCodeImage + captchaId.value
       }
     } catch (e) {

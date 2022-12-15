@@ -14,13 +14,13 @@ export default () => {
     try {
       // 获取通知提醒框数据
       const res = await noticeReq()
-      if (!res) return
+      if (!res || !res.result) return
       // 处理数据
-      const content = res.content.replace(/\\n/g, "")
+      const content = res.result.content.replace(/\\n/g, "")
       notification.info({
-        message: res.title,
+        message: res.result.title,
         description: () => h("div", { innerHTML: content }),
-        duration: res.duration
+        duration: res.result.duration
       })
     } catch (e) {
       console.log(e, "error")

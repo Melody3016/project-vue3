@@ -25,8 +25,8 @@ instance.interceptors.request.use(
 
 // 响应拦截器
 instance.interceptors.response.use(
-  (response: AxiosResponse<IData>) => {
-    const { code, message, result = null } = response.data
+  (response: AxiosResponse<IData>): any => {
+    const { code, message } = response.data
     // 根据返回的code值来做不同的处理(和后端约定)
     switch (code) {
       case 401:
@@ -59,7 +59,7 @@ instance.interceptors.response.use(
         }
         return Promise.reject(new Error(message))
       default:
-        return result
+        return response.data
     }
   },
   (err: AxiosError) => {

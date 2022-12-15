@@ -213,8 +213,8 @@
                   @click="showMore = false"
                 />
               </div>
-              <router-link to="/regist">
-                <a class="forget-pass">{{ $t("regist") }}</a>
+              <router-link to="/register">
+                <a class="forget-pass">{{ $t("register") }}</a>
               </router-link>
             </a-row>
           </div>
@@ -228,6 +228,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, toRaw } from "vue"
+import { useRouter } from "vue-router"
 import type { Rule } from "ant-design-vue/es/form"
 import { Modal, Form } from "ant-design-vue"
 import {
@@ -264,6 +265,7 @@ onMounted(() => {
   getCaptchaImg()
 })
 const useForm = Form.useForm
+const $router = useRouter()
 // UI
 const showMore = ref(false)
 const saveLogin = ref(true)
@@ -536,8 +538,9 @@ const submitLogin = () => {
   // }
 }
 
+// 二维码登录
 const toQrCodeLogin = () => {
-  console.log(111)
+  $router.push("/login-qr")
 }
 
 // 未实现

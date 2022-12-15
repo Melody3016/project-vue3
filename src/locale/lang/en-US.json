@@ -5,7 +5,6 @@
   "autoLogin": "Remember me",
   "forgetPass": "Forget password",
   "otherLogin": "Sign in with",
-  "regist": "Register",
   "register": "Register",
   "registering": "Registering...",
   "registerNow": "No account yet? Register now",
@@ -94,5 +93,13 @@
   "smsPlaceholder": "Please enter the code",
   "phoneResetPwd": "Reset password using phone number",
   "emailResetPwd": "Reset password using email",
-  "qrCodeTip": "XBoot App Scan code to log in"
+  "qrCodeTip": "XBoot App Scan code to log in",
+  "qrCodeLogin": "Scan code to log in",
+  "userLoginTip": "XBoot account to log in",
+  "qrStatus1": "Scan code successfully",
+  "qrStatus-1": "You have canceled this login",
+  "qrStatus-2": "QR code has expired",
+  "qrStatus3": "Please confirm login on your phone",
+  "clickRefresh": "Click to refresh",
+  "qrTip": "Please use the XBoot App to scan the QR code to log in"
 }

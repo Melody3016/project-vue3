@@ -5,7 +5,6 @@
   "autoLogin": "自動ログイン",
   "forgetPass": "パスワードをお忘れですか",
   "otherLogin": "その他の方法",
-  "regist": "アカウント登録",
   "register": "登録",
   "registering": "登録中...",
   "registerNow": "まだアカウントを持っていませんか? 今すぐサインアップ",
@@ -94,5 +93,13 @@
   "smsPlaceholder": "SMS認証コードを入力してください",
   "phoneResetPwd": "電話番号を使用してパスワードをリセット",
   "emailResetPwd": "メールを使用してパスワードをリセット",
-  "qrCodeTip": "XBoot App スキャンコード"
+  "qrCodeTip": "XBoot App スキャンコード",
+  "qrCodeLogin": "スキャンコード",
+  "userLoginTip": "XBoot アカウントログイン",
+  "qrStatus1": "コードを正常にスキャン",
+  "qrStatus-1": "このログインはキャンセルされました",
+  "qrStatus-2": "QR コードの有効期限が切れています",
+  "qrStatus3": "電話でログインを確認してください",
+  "clickRefresh": "クリックして更新",
+  "qrTip": "XBoot アプリを使用して QR コードをスキャンし、ログインしてください"
 }
