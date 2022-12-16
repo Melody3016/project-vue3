@@ -41,7 +41,6 @@ export default () => {
         // this.afterLogin(accessToken)
       }
     }, 3000)
-    console.log(intervalID, "intervalID")
   }
 
   const getQRCode = async () => {
