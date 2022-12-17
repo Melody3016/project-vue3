@@ -4,6 +4,16 @@ const title = (title: string) => {
   window.document.title = title
 }
 
+// await错误处理封装
+const awaitWrap = <T, U = any>(
+  promise: Promise<T>
+): Promise<[U | null, T | null]> => {
+  return promise
+    .then<[null, T]>((data: T) => [null, data])
+    .catch<[U, null]>((err) => [err, null])
+}
+
 export default {
-  title
+  title,
+  awaitWrap
 }

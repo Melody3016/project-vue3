@@ -1,8 +1,9 @@
 // 登录接口param对象类型
 interface ILoginParam {
-  username: string
-  password: string
   code: string
-  captchaId: string
-  saveLogin: boolean
+  mobile?: string
+  username?: string
+  password?: string
+  captchaId?: string
+  saveLogin?: boolean
 }

@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, onBeforeUnmount } from "vue"
 import { useRouter } from "vue-router"
 import {
   ScanOutlined,
@@ -86,12 +86,16 @@ import useQrCode from "./useQrCode"
 onMounted(() => {
   getQRCode()
 })
+onBeforeUnmount(() => {
+  // 清除查询二维码状态定时器
+  window.clearInterval(checkQRId.value)
+})
 const $router = useRouter()
 // UI
 const tabKey = ref("1")
 
 // 二维码功能
-const { qrUrl, qrStatus, getQRCode } = useQrCode()
+const { qrUrl, qrStatus, checkQRId, getQRCode } = useQrCode()
 
 // 账号登录
 const toAccountLogin = () => {

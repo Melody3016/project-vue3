@@ -2,7 +2,7 @@
 import axios from "axios"
 import router from "@/router/index"
 import Cookies from "js-cookie"
-import type { AxiosRequestConfig, AxiosError, AxiosResponse } from "axios"
+import type { AxiosError, AxiosResponse } from "axios"
 import { message as Message } from "ant-design-vue"
 import { setStore, getStore } from "@/libs/localStroage"
 
@@ -41,7 +41,7 @@ instance.interceptors.response.use(
           }
           router.push("/login")
         }
-        return Promise.reject(new Error(message))
+        break
       case 403:
         // 没有权限
         if (message !== null) {
@@ -49,7 +49,7 @@ instance.interceptors.response.use(
         } else {
           Message.error("未知错误")
         }
-        return Promise.reject(new Error(message))
+        break
       case 500:
         // 错误
         if (message !== null) {
@@ -57,10 +57,11 @@ instance.interceptors.response.use(
         } else {
           Message.error("未知错误")
         }
-        return Promise.reject(new Error(message))
+        break
       default:
         return response.data
     }
+    return response.data
   },
   (err: AxiosError) => {
     // 返回状态码不为200时候的错误处理
@@ -82,7 +83,7 @@ instance.interceptors.response.use(
         message = "网络连接故障"
     }
     Message.error(message)
-    console.log(err, "res err")
+    console.log(err, "axios.ts err")
     return Promise.reject(err)
   }
 )

@@ -25,7 +25,7 @@ import type {
   ButtonSize,
   ButtonShape
 } from "ant-design-vue/es/button"
-import { submitText, suffixText } from "@/utils/langs"
+import { submitText } from "@/utils/langs"
 
 const props = defineProps({
   text: {
@@ -81,9 +81,6 @@ const clicked = ref(false)
 // methods
 const init = () => {}
 const handleClick = () => {
-  if (props.autoCountDown) {
-    startCountDown()
-  }
   emit("on-click", true)
 }
 const startCountDown = () => {
@@ -116,6 +113,14 @@ watch(
   () => props.text,
   (newX) => {
     setText(newX)
+  }
+)
+watch(
+  () => props.autoCountDown,
+  (newX) => {
+    if (newX) {
+      startCountDown()
+    }
   }
 )
 

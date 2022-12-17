@@ -33,6 +33,7 @@
                       :placeholder="$t('userPlaceholder')"
                       v-model:value="accLoginModel.username"
                       size="large"
+                      autocomplete="off"
                       allowClear
                     >
                       <template #prefix>
@@ -55,16 +56,17 @@
                       </template>
                     </a-input-password>
                   </a-form-item>
-                  <a-form-item name="imgCode" v-bind="validateInfosAcc.imgCode">
+                  <a-form-item name="imgCode" v-bind="validateInfosAcc.code">
                     <a-row
                       type="flex"
                       justify="space-between"
                       style="align-items: center; overflow: hidden"
                     >
                       <a-input
-                        v-model:value="accLoginModel.imgCode"
+                        v-model:value="accLoginModel.code"
                         size="large"
                         allowClear
+                        autocomplete="off"
                         :placeholder="$t('codePlaceholder')"
                         :maxlength="10"
                         class="input-verify"
@@ -132,7 +134,7 @@
                       <CountDownButton
                         ref="countDown"
                         @on-click="sendSmsCode"
-                        :autoCountDown="true"
+                        :autoCountDown="autoCountDown"
                         size="large"
                         :loading="sending"
                         :text="getSms"
@@ -150,7 +152,7 @@
             </a-tooltip>
 
             <a-row type="flex" justify="space-between" align="middle">
-              <a-checkbox v-model="saveLogin" size="large">{{
+              <a-checkbox v-model:checked="saveLogin" size="large">{{
                 $t("autoLogin")
               }}</a-checkbox>
               <a-dropdown :trigger="['click']" @on-click="handleDropDown">
@@ -227,10 +229,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, toRaw } from "vue"
+import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
-import type { Rule } from "ant-design-vue/es/form"
-import { Modal, Form } from "ant-design-vue"
+import { Modal } from "ant-design-vue"
 import {
   UserOutlined,
   PhoneOutlined,
@@ -245,33 +246,27 @@ import {
   MailOutlined,
   QrcodeOutlined
 } from "@ant-design/icons-vue"
-import { validateMobile } from "@/libs/validate"
-import {
-  getSms,
-  userRuleEmpty,
-  pwdRuleEmpty,
-  codeRuleEmpty
-} from "@/utils/langs"
+import { getSms } from "@/utils/langs"
 import CountDownButton from "@/components/xboot/count-down-button.vue"
 import LangSwitch from "@/components/common/lang-switch.vue"
 import Header from "@/components/common/header.vue"
 import Footer from "@/components/common/footer.vue"
 import useNotice from "./useNotice"
 import useCaptchaImg from "./useCaptchaImg"
+import useAccountLogin from "./useAccountLogin"
+import usePhoneLogin from "./usePhoneLogin"
 
 onMounted(() => {
   relatedLogin()
   getNoticeInfo()
   getCaptchaImg()
 })
-const useForm = Form.useForm
 const $router = useRouter()
 // UI
 const showMore = ref(false)
 const saveLogin = ref(true)
 const tabKey = ref("1")
 const loading = ref(false)
-const sending = ref(false)
 
 // 生成通知提醒框
 const { getNoticeInfo } = useNotice()
@@ -280,99 +275,29 @@ const { getNoticeInfo } = useNotice()
 const { loadingCaptcha, captchaImg, captchaId, getCaptchaImg } = useCaptchaImg()
 
 // 账户密码登录
-interface AccLoginState {
-  username: string
-  password: string
-  imgCode: string
-}
-const accLoginModel = reactive<AccLoginState>({
-  username: "",
-  password: "",
-  imgCode: ""
-})
-const accLoginRules: Record<string, Rule[]> = reactive({
-  username: [
-    {
-      required: true,
-      message: userRuleEmpty.value,
-      trigger: "change"
-    }
-  ],
-  password: [
-    {
-      required: true,
-      message: pwdRuleEmpty.value,
-      trigger: "change"
-    }
-  ],
-  imgCode: [
-    {
-      required: true,
-      message: codeRuleEmpty.value,
-      trigger: "change"
-    }
-  ]
-})
-const { validate: validateAcc, validateInfos: validateInfosAcc } = useForm(
-  accLoginModel,
-  accLoginRules,
-  {
-    onValidate: (...args) => console.log(...args)
-  }
-)
+const { accLoginModel, accLoginRules, validateInfosAcc, loginByAccount } =
+  useAccountLogin(getCaptchaImg)
 
 // 手机验证码登录
-interface MobLoginState {
-  mobile: string
-  code: string
-}
-const mobLoginModel = reactive<MobLoginState>({
-  mobile: "",
-  code: ""
-})
-const mobLoginRules: Record<string, Rule[]> = reactive({
-  mobile: [
-    {
-      required: true,
-      validator: validateMobile,
-      trigger: "change"
-    }
-  ],
-  code: [
-    {
-      required: true,
-      message: codeRuleEmpty.value,
-      trigger: "change"
-    }
-  ]
-})
-const { validate: validateMob, validateInfos: validateInfosMob } = useForm(
+const {
   mobLoginModel,
   mobLoginRules,
-  {
-    onValidate: (...args) => console.log(...args)
-  }
-)
+  validateInfosMob,
+  sending,
+  autoCountDown,
+  sendSmsCode,
+  loginByPhone
+} = usePhoneLogin()
 
-const submitLogin = () => {
+const submitLogin = async () => {
   if (tabKey.value === "1") {
     // 账号密码登录
-    validateAcc()
-      .then(() => {
-        console.log(toRaw(accLoginModel), "accLoginModel")
-      })
-      .catch((err) => {
-        console.log("error", err)
-      })
+    const accessToken = await loginByAccount(saveLogin.value, captchaId.value)
+    console.log(accessToken, "accessToken")
   } else {
     // 手机验证码登录
-    validateMob()
-      .then(() => {
-        console.log(toRaw(mobLoginModel), "mobLoginModel")
-      })
-      .catch((err) => {
-        console.log("error", err)
-      })
+    const accessToken = await loginByPhone(saveLogin.value)
+    console.log(accessToken, "accessToken")
   }
 
   // if (tabName.value === "username") {
@@ -544,10 +469,6 @@ const toQrCodeLogin = () => {
 }
 
 // 未实现
-// const getSms = computed(() => t("getSms"))
-const sendSmsCode = () => {
-  // 发送短信验证码
-}
 const toGithubLogin = () => {
   Modal.info({
     title: "抱歉，请获取完整版",

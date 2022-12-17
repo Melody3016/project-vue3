@@ -35,5 +35,17 @@ export const checkQRStatus = (checkToken: string) => {
 
 // 登陆
 export const loginReq = (params: ILoginParam) => {
-  return postNoAuthRequest("/login", params)
+  return postNoAuthRequest<IData<string>>("/auth/login", params)
+}
+
+// 发送短信验证码
+export const sendLoginSms = (mobile: string) => {
+  return getNoAuthRequest<IData<string>>(
+    `/common/captcha/sendLoginSms/${mobile}`
+  )
+}
+
+// 短信验证码登录
+export const smsLogin = (params: ILoginParam) => {
+  return postNoAuthRequest<IData<string>>("/auth/smsLogin", params)
 }
