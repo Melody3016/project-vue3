@@ -78,9 +78,6 @@ import {
   DesktopOutlined,
   CheckCircleFilled
 } from "@ant-design/icons-vue"
-import LangSwitch from "@/components/common/lang-switch.vue"
-import Header from "@/components/common/header.vue"
-import Footer from "@/components/common/footer.vue"
 import useQrCode from "./useQrCode"
 
 onMounted(() => {

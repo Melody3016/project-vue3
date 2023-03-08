@@ -39,13 +39,27 @@ export const loginReq = (params: ILoginParam) => {
 }
 
 // 发送短信验证码
-export const sendLoginSms = (mobile: string) => {
-  return getNoAuthRequest<IData<string>>(
-    `/common/captcha/sendLoginSms/${mobile}`
-  )
+export const sendSms = (params: ISmsParam, type: number) => {
+  let url = "/common/captcha/"
+  if (type === 1) {
+    // 登录验证码
+    url += `sendLoginSms/${params.mobile}`
+  } else if (type === 2) {
+    // 注册验证码
+    url += `sendRegistSms/${params.mobile}`
+  }
+  return getNoAuthRequest<IData<string>>(url, {
+    captchaId: params.captchaId,
+    code: params.code
+  })
 }
 
 // 短信验证码登录
 export const smsLogin = (params: ILoginParam) => {
   return postNoAuthRequest<IData<string>>("/auth/smsLogin", params)
+}
+
+// 注册
+export const registerReq = (params: IRegisterParam) => {
+  return postNoAuthRequest<IData<object>>("/auth/register", params)
 }

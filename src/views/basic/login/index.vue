@@ -19,11 +19,7 @@
                     {{ $t("usernameLogin") }}
                   </span>
                 </template>
-                <a-form
-                  :model="accLoginModel"
-                  :rules="accLoginRules"
-                  class="form"
-                >
+                <a-form class="form">
                   <a-form-item
                     name="username"
                     hasFeedback
@@ -100,11 +96,7 @@
                     {{ $t("mobileLogin") }}
                   </span>
                 </template>
-                <a-form
-                  :model="mobLoginModel"
-                  :rules="mobLoginRules"
-                  class="form"
-                >
+                <a-form class="form">
                   <a-form-item name="mobile" v-bind="validateInfosMob.mobile">
                     <a-input
                       :placeholder="$t('phonePlaceholder')"
@@ -247,12 +239,8 @@ import {
   QrcodeOutlined
 } from "@ant-design/icons-vue"
 import { getSms } from "@/utils/langs"
-import CountDownButton from "@/components/xboot/count-down-button.vue"
-import LangSwitch from "@/components/common/lang-switch.vue"
-import Header from "@/components/common/header.vue"
-import Footer from "@/components/common/footer.vue"
 import useNotice from "./useNotice"
-import useCaptchaImg from "./useCaptchaImg"
+import useCaptchaImg from "@/hooks/useCaptchaImg"
 import useAccountLogin from "./useAccountLogin"
 import usePhoneLogin from "./usePhoneLogin"
 
@@ -275,13 +263,12 @@ const { getNoticeInfo } = useNotice()
 const { loadingCaptcha, captchaImg, captchaId, getCaptchaImg } = useCaptchaImg()
 
 // 账户密码登录
-const { accLoginModel, accLoginRules, validateInfosAcc, loginByAccount } =
+const { accLoginModel, validateInfosAcc, loginByAccount } =
   useAccountLogin(getCaptchaImg)
 
 // 手机验证码登录
 const {
   mobLoginModel,
-  mobLoginRules,
   validateInfosMob,
   sending,
   autoCountDown,

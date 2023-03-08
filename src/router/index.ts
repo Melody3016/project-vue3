@@ -9,7 +9,7 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "home",
+      name: "Home",
       component: () => import("../views/home/index.vue")
     },
     ...single
@@ -26,23 +26,23 @@ router.beforeEach((to, from, next) => {
   const isPermission =
     name &&
     ![
-      "login",
-      "login-qr",
-      "register",
-      "register-result",
-      "relate",
-      "reset",
-      "authorize"
+      "Login",
+      "LoginQr",
+      "Register",
+      "RegisterResult",
+      "Relate",
+      "Reset",
+      "Authorize"
     ].includes(name as string)
   if (!Cookie.get("userinfo") && isPermission) {
     // 未登录且访问权限路由
     next({
-      name: "login"
+      name: "Login"
     })
-  } else if (Cookie.get("userinfo") && name === "login") {
+  } else if (Cookie.get("userinfo") && name === "Login") {
     // 已登录访问登录页直接跳转至首页
     next({
-      name: "home"
+      name: "Home"
     })
   } else {
     next()

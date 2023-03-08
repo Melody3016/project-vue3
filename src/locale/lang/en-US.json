@@ -101,5 +101,7 @@
   "qrStatus-2": "QR code has expired",
   "qrStatus3": "Please confirm login on your phone",
   "clickRefresh": "Click to refresh",
-  "qrTip": "Please use the XBoot App to scan the QR code to log in"
+  "qrTip": "Please use the XBoot App to scan the QR code to log in",
+  "emailPlaceholder": "Please enter email",
+  "emailRule": "Incorrect mailbox format"
 }

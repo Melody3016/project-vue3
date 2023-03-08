@@ -1,5 +1,7 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
+// 全局引入图片验证码组件
+import SlideVerify from "vue-monoplasty-slide-verify/src/lib/index.js"
 import i18n from "@/locale"
 import App from "./App.vue"
 import router from "./router"
@@ -10,4 +12,10 @@ import "nprogress/nprogress.css"
 
 const app = createApp(App)
 
-app.use(createPinia()).use(router).use(i18n).use(commonFunc).mount("#app")
+app
+  .use(createPinia())
+  .use(router)
+  .use(i18n)
+  .use(commonFunc)
+  .use(SlideVerify)
+  .mount("#app")

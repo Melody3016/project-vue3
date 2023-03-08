@@ -91,7 +91,6 @@ export default (cb: Function) => {
 
   return {
     accLoginModel,
-    accLoginRules,
     validateInfosAcc,
     loginByAccount
   }

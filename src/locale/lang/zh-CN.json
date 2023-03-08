@@ -101,5 +101,7 @@
   "qrStatus-2": "二维码已失效",
   "qrStatus3": "请在手机上确认登录",
   "clickRefresh": "点击刷新",
-  "qrTip": "请使用 XBoot App 扫描二维码登录"
+  "qrTip": "请使用 XBoot App 扫描二维码登录",
+  "emailPlaceholder": "请输入邮箱",
+  "emailRule": "邮箱格式不正确"
 }
