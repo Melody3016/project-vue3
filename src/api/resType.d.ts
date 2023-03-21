@@ -21,3 +21,41 @@ interface ICheckQRStatusRes {
   accessToken: string | null
   status: string
 }
+
+// 用户信息
+interface permissionsStates {
+  path: string
+  title: string
+}
+interface rolesStates {
+  description: string
+  id: string
+  name: string
+}
+interface IUserInfoRes {
+  address: string
+  avatar: string
+  birth: string
+  createBy: string
+  createTime: string
+  defaultRole: number
+  delFlag: number
+  departmentId: string
+  departmentTitle: string
+  description: string
+  email: string
+  id: string
+  mobile: string
+  nickname: string
+  passStrength: string
+  password: string
+  permissions?: permissionsStates[]
+  roles?: rolesStates[]
+  sex: string
+  status: number
+  street: string
+  type: number
+  updateBy: string
+  updateTime: string
+  username: string
+}

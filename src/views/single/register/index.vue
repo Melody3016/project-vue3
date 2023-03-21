@@ -262,7 +262,7 @@ const handleClick = async () => {
   // 验证手机号
   const res = await onValMobile()
   if (!res) return
-  visible.value = true
+  slideVisible.value = true
 }
 const handleOk = async () => {
   if (!code) {

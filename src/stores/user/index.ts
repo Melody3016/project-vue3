@@ -1,12 +1,8 @@
-import { ref, computed } from "vue"
 import { defineStore } from "pinia"
+import useUser from "./useUser"
 
 export const useUserStore = defineStore("user", () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
-  }
-
-  return { count, doubleCount, increment }
+  // 用户信息
+  const { avatar, nickname, setUserInfo } = useUser()
+  return { avatar, nickname, setUserInfo }
 })

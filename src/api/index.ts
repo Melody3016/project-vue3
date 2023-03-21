@@ -63,3 +63,8 @@ export const smsLogin = (params: ILoginParam) => {
 export const registerReq = (params: IRegisterParam) => {
   return postNoAuthRequest<IData<object>>("/auth/register", params)
 }
+
+// 获取用户登录信息
+export const userInfo = () => {
+  return getRequest<IData<IUserInfoRes>>("/user/info", null)
+}

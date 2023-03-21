@@ -29,6 +29,9 @@ instance.interceptors.response.use(
     const { code, message } = response.data
     // 根据返回的code值来做不同的处理(和后端约定)
     switch (code) {
+      case 302:
+        console.log(response, "response")
+        break
       case 401:
         // 未登录 清除已登录状态
         Cookies.set("userInfo", "")
@@ -91,7 +94,7 @@ instance.interceptors.response.use(
 // 需要携带token的请求
 export const getRequest = <R>(
   url: string,
-  params: { [key: string]: any } | URLSearchParams
+  params: { [key: string]: any } | URLSearchParams | null
 ) => {
   // 读取本地存储的token
   const accessToken = getStore("accessToken")

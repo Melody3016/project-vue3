@@ -221,7 +221,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+import { ref, onMounted, getCurrentInstance } from "vue"
 import { useRouter } from "vue-router"
 import { Modal } from "ant-design-vue"
 import {
@@ -243,6 +243,7 @@ import useNotice from "./useNotice"
 import useCaptchaImg from "@/hooks/useCaptchaImg"
 import useAccountLogin from "./useAccountLogin"
 import usePhoneLogin from "./usePhoneLogin"
+import useAfterLogin from "../hooks/useAfterLogin"
 
 onMounted(() => {
   relatedLogin()
@@ -250,6 +251,8 @@ onMounted(() => {
   getCaptchaImg()
 })
 const $router = useRouter()
+const instance = getCurrentInstance()
+
 // UI
 const showMore = ref(false)
 const saveLogin = ref(true)
@@ -276,178 +279,22 @@ const {
   loginByPhone
 } = usePhoneLogin()
 
+// 登录
 const submitLogin = async () => {
+  loading.value = true
+  let accessToken = null
   if (tabKey.value === "1") {
     // 账号密码登录
-    const accessToken = await loginByAccount(saveLogin.value, captchaId.value)
-    console.log(accessToken, "accessToken")
+    accessToken = await loginByAccount(saveLogin.value, captchaId.value)
   } else {
     // 手机验证码登录
-    const accessToken = await loginByPhone(saveLogin.value)
-    console.log(accessToken, "accessToken")
+    accessToken = await loginByPhone(saveLogin.value)
   }
-
-  // if (tabName.value === "username") {
-  //   this.$refs.usernameLoginForm.validate((valid) => {
-  //     if (valid) {
-  //       this.loading = true;
-  //       /* login({
-  //         username: this.form.username,
-  //         password: this.form.password,
-  //         code: this.form.imgCode,
-  //         captchaId: this.captchaId,
-  //         saveLogin: this.saveLogin,
-  //       }).then((res) => {
-  //         if (res.success) {
-  //           this.setStore("accessToken", res.result);
-  //           // 获取用户信息
-  //           userInfo().then((res) => {
-  //             if (res.success) {
-  //               // 避免超过大小限制
-  //               delete res.result.permissions;
-  //               let roles = [];
-  //               res.result.roles.forEach((e) => {
-  //                 roles.push(e.name);
-  //               });
-  //               delete res.result.roles;
-  //               this.setStore("roles", roles);
-  //               this.setStore("saveLogin", this.saveLogin);
-  //               if (this.saveLogin) {
-  //                 // 保存7天
-  //                 Cookies.set("userInfo", JSON.stringify(res.result), {
-  //                   expires: 7,
-  //                 });
-  //               } else {
-  //                 Cookies.set("userInfo", JSON.stringify(res.result));
-  //               }
-  //               this.setStore("userInfo", res.result);
-  //               this.$store.commit("setUserInfo", res.result);
-  //               // 加载菜单
-  //               util.initRouter(this);
-  //               this.$router.push({
-  //                 name: "home_index",
-  //               });
-  //             } else {
-  //               this.loading = false;
-  //             }
-  //           });
-  //         } else {
-  //           this.loading = false;
-  //           this.getCaptchaImg();
-  //         }
-  //       }); */
-  //       // 模拟登录
-  //       /* setTimeout(() => {
-  //         // this.setStore("accessToken", res.result);
-  //         this.setStore("accessToken", "67c4197ed94249438e4726abcdf609d8");
-  //         setTimeout(() => {
-  //           const resResult = {
-  //             "id": "4363087427670016",
-  //             "createBy": "",
-  //             "createTime": "2018-05-03 15:09:42",
-  //             "updateBy": "test",
-  //             "updateTime": "2022-08-19 11:19:52",
-  //             "delFlag": 0,
-  //             "username": "test",
-  //             "password": null,
-  //             "nickname": "游客12",
-  //             "mobile": "18782059033",
-  //             "email": "test@exrick.cn",
-  //             "address": "110000,110100,110105",
-  //             "street": "1",
-  //             "sex": "女",
-  //             "passStrength": "弱",
-  //             "avatar": "",
-  //             "type": 0,
-  //             "status": 0,
-  //             "description": "233",
-  //             "departmentId": "40343262766043136",
-  //             "departmentTitle": "成都分部",
-  //             "birth": "2021-03-13",
-  //             "roles": [
-  //               {
-  //                 "id": "496138616573953",
-  //                 "name": "ROLE_USER",
-  //                 "description": null
-  //               }
-  //             ],
-  //             "permissions": [
-  //               {
-  //                 "title": "编辑已发送消息",
-  //                 "path": "/xboot/messageSend/update*"
-  //               },
-  //               {
-  //                 "title": "添加按钮测试",
-  //                 "path": "test-add"
-  //               },
-  //               {
-  //                 "title": "编辑按钮测试",
-  //                 "path": "test-edit"
-  //               },
-  //               {
-  //                 "title": "删除按钮测试",
-  //                 "path": "test-delete"
-  //               }
-  //             ],
-  //             "defaultRole": null
-  //           }
-  //           // 避免超过大小限制
-  //           // delete res.result.permissions;
-  //           delete resResult.permissions;
-  //           let roles = [];
-  //           // res.result.roles.forEach((e) => {
-  //           //   roles.push(e.name);
-  //           // });
-  //           const resRoles = [
-  //             {
-  //               "id": "496138616573953",
-  //               "name": "ROLE_USER",
-  //               "description": null
-  //             }
-  //           ]
-  //           resRoles.forEach((e) => {
-  //             roles.push(e.name);
-  //           });
-  //           // delete res.result.roles;
-  //           delete resResult.roles;
-  //           this.setStore("roles", roles);
-  //           this.setStore("saveLogin", this.saveLogin);
-  //           if (this.saveLogin) {
-  //             // 保存7天
-  //             Cookies.set("userInfo", JSON.stringify(resResult), {
-  //               expires: 7,
-  //             });
-  //           } else {
-  //             Cookies.set("userInfo", JSON.stringify(resResult));
-  //           }
-  //           this.setStore("userInfo", resResult);
-  //           this.$store.commit("setUserInfo", resResult);
-  //           // 加载菜单
-  //           util.initRouter(this);
-  //           this.$router.push({
-  //             name: "home_index",
-  //           });
-  //         }, 500)
-  //       }, 500) */
-  //     }
-  //   })
-  // } else if (this.tabName == "mobile") {
-  //   this.$refs.mobileLoginForm.validate((valid) => {
-  //     if (valid) {
-  //       if (this.form.code == "") {
-  //         this.errorCode = "验证码不能为空";
-  //         return;
-  //       } else {
-  //         this.errorCode = "";
-  //       }
-  //       this.form.saveLogin = this.saveLogin;
-  //       this.$Modal.info({
-  //         title: "抱歉，请获取完整版",
-  //         content: "支付链接: http://xpay.exrick.cn/pay?xboot",
-  //       });
-  //     }
-  //   });
-  // }
+  if (accessToken) {
+    const { afterLogin } = useAfterLogin(instance)
+    await afterLogin(accessToken, saveLogin.value)
+  }
+  loading.value = false
 }
 
 // 二维码登录
