@@ -59,3 +59,25 @@ interface IUserInfoRes {
   updateTime: string
   username: string
 }
+
+// 菜单接口返回类型
+interface IMenuListRes {
+  buttonType: string
+  component: string
+  description: string
+  i18n: string
+  icon: string
+  id: string
+  isMenu: boolean
+  level: number
+  localize: boolean
+  name: string
+  parentId: string
+  path: string
+  permTypes: string[]
+  showAlways: boolean
+  title: string
+  type: number
+  url: string
+  children?: IMenuListRes[] | null
+}

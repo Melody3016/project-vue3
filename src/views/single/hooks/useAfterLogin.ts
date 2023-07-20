@@ -4,7 +4,6 @@ import { userInfo } from "@/api"
 import utils from "@/utils/utils"
 import { useUserStore } from "@/stores"
 
-
 export default (instance: ComponentInternalInstance | null) => {
   // 登录成功，获取到token，获取用户信息，进行路由动态加载
   const afterLogin = async (token: string, saveLogin: boolean) => {

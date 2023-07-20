@@ -15,10 +15,10 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   // 目标路由名称
   const name = to.name
-  // 是否为权限路由
-  const isPermission =
+  // 是否为单独路由
+  const isSingle =
     name &&
-    ![
+    [
       "Login",
       "LoginQr",
       "Register",
@@ -27,8 +27,8 @@ router.beforeEach((to, from, next) => {
       "Reset",
       "Authorize"
     ].includes(name as string)
-  if (!Cookie.get("userInfo") && isPermission) {
-    // 未登录且访问权限路由
+  if (!Cookie.get("userInfo") && !isSingle) {
+    // 未登录且访问的不是单独路由
     next({
       name: "Login"
     })

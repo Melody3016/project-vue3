@@ -68,3 +68,8 @@ export const registerReq = (params: IRegisterParam) => {
 export const userInfo = () => {
   return getRequest<IData<IUserInfoRes>>("/user/info", null)
 }
+
+// 获取菜单信息
+export const getMenuList = () => {
+  return getRequest<IData<IMenuListRes[]>>("/permission/getMenuList", null)
+}
