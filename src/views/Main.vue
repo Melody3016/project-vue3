@@ -3,7 +3,7 @@
     <!-- 顶部导航条 -->
     <a-layout-header class="header">
       <!-- logo-->
-      <div class="fix-logo">
+      <div class="fix-logo" @click="$router.push('/')">
         <img src="@/assets/logo-white.png" key="max-logo" />
       </div>
 
@@ -106,7 +106,7 @@ const showFooter = ref(true)
 // 获取菜单
 const appStore = useAppStore()
 const { currNavName, navList, menuList, menuData } = storeToRefs(appStore)
-const { handleMenuList, getMenuData, handleNavList, getCurrNavName } = appStore
+const { handleMenuList, handleNavList, getCurrNavName } = appStore
 
 // 导航条数据
 const current = ref<string[]>([currNavName.value])
@@ -149,6 +149,7 @@ onMounted(() => {
     background: #2d8cf0;
 
     .fix-logo {
+      cursor: pointer;
       width: 170px;
       img {
         height: 44px;

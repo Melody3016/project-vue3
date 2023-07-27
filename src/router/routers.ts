@@ -52,7 +52,7 @@ export const other: RouteRecordRaw[] = [
           localize: true,
           i18n: "home"
         },
-        component: () => import("@/views/other/home/index.vue")
+        component: () => import("@/views/home/index.vue")
       }
       /* ,
       {

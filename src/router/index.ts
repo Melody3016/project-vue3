@@ -42,8 +42,10 @@ router.beforeEach(async (to, from, next) => {
   } else {
     // 未添加动态路由则先添加再跳转
     const appStore = useAppStore()
-    const { setHasAddRoute, dynamicAddRoute, getMenuData, getDynamicRoutes } = appStore
-    const { hasAddRoute, dynamicRoutes, otherRoutes, menuData } = storeToRefs(appStore)
+    const { setHasAddRoute, dynamicAddRoute, getMenuData, getDynamicRoutes } =
+      appStore
+    const { hasAddRoute, dynamicRoutes, otherRoutes, menuData } =
+      storeToRefs(appStore)
     if (!hasAddRoute.value) {
       // 动态添加路由
       await getMenuData()
