@@ -54,6 +54,30 @@ export const other: RouteRecordRaw[] = [
         },
         component: () => import("@/views/other/home/index.vue")
       }
+      /* ,
+      {
+        path: "sys",
+        name: "sys",
+        meta: {
+          title: "系统管理",
+          localize: true,
+          i18n: "sys"
+        },
+        redirect: "/home",
+        // component: Main,
+        children: [
+          {
+            path: "user-manage",
+            name: "user-manage",
+            meta: {
+              title: "用户管理",
+              localize: true,
+              i18n: "user-manage"
+            },
+            component: () => import("@/views/sys/user-manage/userManage.vue")
+          }
+        ]
+      } */
       // {
       //   path: "ownspace",
       //   name: "OwnspaceIndex",
@@ -106,4 +130,13 @@ export const other: RouteRecordRaw[] = [
       // }
     ]
   }
+  // ,
+  // {
+  //   path: "/:pathMatch(.*)*",
+  //   name: "error-404",
+  //   meta: {
+  //     title: "404-页面不存在"
+  //   },
+  //   component: () => import("../views/error-page/404.vue")
+  // }
 ]

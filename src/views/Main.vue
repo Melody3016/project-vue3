@@ -51,7 +51,11 @@
         collapsible
         width="200"
       >
-        <a-menu v-model:selectedKeys="selectedKeys" mode="inline">
+        <a-menu
+          v-model:selectedKeys="selectedKeys"
+          mode="inline"
+          @click="itemClick"
+        >
           <a-sub-menu v-for="item in menuList" :key="item.name">
             <template #icon>
               <AppstoreOutlined />
@@ -66,103 +70,8 @@
       <!-- Tags 标签 -->
 
       <!-- 页面部分 -->
-      <a-layout-content style="overflow: auto"
-        >...
-        <br />
-        Really
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        long
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        ...
-        <br />
-        content
-
+      <a-layout-content style="overflow: auto">
+        <RouterView></RouterView>
         <!-- 页面页脚 -->
         <div class="main-page-footer-content" v-if="showFooter">
           <Footer class="main-page-footer"></Footer>
@@ -177,11 +86,17 @@ import {
   MenuFoldOutlined,
   AppstoreOutlined
 } from "@ant-design/icons-vue"
-import { ref, onMounted } from "vue"
-import type { MenuClickEventHandler } from "ant-design-vue/es/menu/src/interface"
-import useInitRouter from "@/hooks/useInitRouter"
+import { onMounted, ref, watch } from "vue"
+import { storeToRefs } from "pinia"
+import { useRouter } from "vue-router"
+import type {
+  MenuClickEventHandler,
+  MenuInfo
+} from "ant-design-vue/es/menu/src/interface"
 import { setStore } from "@/libs/localStroage"
+import { useAppStore } from "@/stores"
 
+const $router = useRouter()
 const collapsed = ref(false)
 const selectedKeys = ref<string[]>(["1"])
 
@@ -189,26 +104,38 @@ const selectedKeys = ref<string[]>(["1"])
 const showFooter = ref(true)
 
 // 获取菜单
-const { currNavName, navList, menuList, getMenuData, handleMenuList } =
-  useInitRouter()
+const appStore = useAppStore()
+const { currNavName, navList, menuList, menuData } = storeToRefs(appStore)
+const { handleMenuList, getMenuData, handleNavList, getCurrNavName } = appStore
 
 // 导航条数据
 const current = ref<string[]>([currNavName.value])
+
+watch(currNavName, (newVal) => {
+  current.value[0] = newVal
+})
 
 // 切换菜单
 const changeNav: MenuClickEventHandler = ({ key }) => {
   // 缓存localStorage中
   setStore("currNavName", key)
-  handleMenuList(key)
+  handleMenuList(key, menuData.value)
 }
 
-onMounted(async () => {
+// 点击菜单项进行路由跳转
+const itemClick = ({ keyPath }: MenuInfo) => {
+  const path = "/" + keyPath?.join("/")
+  $router.push(path)
+}
+onMounted(() => {
+  // 获取当前选中导航
+  getCurrNavName()
   // 获取菜单数据
-  getMenuData()
-  console.log("onMounted ---- navList", navList)
-  console.log("onMounted ---- menuList", menuList)
-  current.value[0] = currNavName.value
-  // 获取之前选中导航条
+  // getMenuData()
+  // 获取navList
+  handleNavList(menuData.value)
+  // 获取menuList
+  handleMenuList(currNavName.value, menuData.value)
 })
 </script>
 <style lang="scss" scoped>

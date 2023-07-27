@@ -3,13 +3,15 @@ import Cookie from "js-cookie"
 import NProgress from "nprogress"
 import { single, other } from "./routers"
 import util from "@/utils/utils"
+import { useAppStore } from "@/stores"
+import { storeToRefs } from "pinia"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [...single, ...other]
 })
 // 路由拦截
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   util.title(to.meta.title as string)
   // 开启顶部加载条
   NProgress.start()
@@ -38,7 +40,24 @@ router.beforeEach((to, from, next) => {
       name: "HomeIndex"
     })
   } else {
-    next()
+    // 未添加动态路由则先添加再跳转
+    const appStore = useAppStore()
+    const { setHasAddRoute, dynamicAddRoute, getMenuData, getDynamicRoutes } = appStore
+    const { hasAddRoute, dynamicRoutes, otherRoutes, menuData } = storeToRefs(appStore)
+    if (!hasAddRoute.value) {
+      // 动态添加路由
+      await getMenuData()
+      getDynamicRoutes(dynamicRoutes.value, menuData.value)
+      dynamicAddRoute(dynamicRoutes.value, "otherRouter")
+      dynamicAddRoute(otherRoutes.value)
+      setHasAddRoute(true)
+      // next({ ...to, replace: true })
+      // router.push(to.path)
+      next(to.path)
+    } else {
+      next()
+    }
+    // next()
   }
 })
 

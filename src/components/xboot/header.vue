@@ -21,7 +21,7 @@ const mainTheme = computed(() => {
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .header {
   margin-top: 8vh;
   margin-bottom: 5vh;

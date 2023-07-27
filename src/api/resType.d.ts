@@ -79,5 +79,5 @@ interface IMenuListRes {
   title: string
   type: number
   url: string
-  children?: IMenuListRes[] | null
+  children: IMenuListRes[] | null
 }
