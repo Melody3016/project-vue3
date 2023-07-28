@@ -70,7 +70,7 @@
       <!-- Tags 标签 -->
 
       <!-- 页面部分 -->
-      <a-layout-content style="overflow: auto">
+      <a-layout-content style="overflow: auto; padding: 20px">
         <RouterView></RouterView>
         <!-- 页面页脚 -->
         <div class="main-page-footer-content" v-if="showFooter">
@@ -93,8 +93,8 @@ import type {
   MenuClickEventHandler,
   MenuInfo
 } from "ant-design-vue/es/menu/src/interface"
-import { setStore } from "@/libs/localStroage"
-import { useAppStore } from "@/stores"
+import { setStore, getStore } from "@/libs/localStroage"
+import { useAppStore, useUserStore } from "@/stores"
 
 const $router = useRouter()
 const collapsed = ref(false)
@@ -105,6 +105,7 @@ const showFooter = ref(true)
 
 // 获取菜单
 const appStore = useAppStore()
+const userStore = useUserStore()
 const { currNavName, navList, menuList, menuData } = storeToRefs(appStore)
 const { handleMenuList, handleNavList, getCurrNavName } = appStore
 
@@ -136,6 +137,14 @@ onMounted(() => {
   handleNavList(menuData.value)
   // 获取menuList
   handleMenuList(currNavName.value, menuData.value)
+  // 设置用户信息
+  const { setUserInfo } = userStore
+  setUserInfo({
+    nickname: getStore("nickname") || "",
+    avatar: getStore("avatar") || "",
+    departmentTitle: getStore("departmentTitle") || "",
+    type: Number(getStore("type")) || 0
+  })
 })
 </script>
 <style lang="scss" scoped>

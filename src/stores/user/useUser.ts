@@ -5,17 +5,31 @@ export default () => {
   // 昵称头像
   const nickname = ref("")
   const avatar = ref("")
+  // 部门用户类型
+  const departmentTitle = ref("")
+  const type = ref(0)
   // 设置用户信息
-  const setUserInfo = (v: IUserInfoRes) => {
+  const setUserInfo = (v: {
+    nickname: string
+    avatar: string
+    departmentTitle: string
+    type: number
+  }) => {
     nickname.value = v.nickname
     avatar.value = v.avatar
+    departmentTitle.value = v.departmentTitle
+    type.value = v.type
     setStore("nickname", v.nickname)
     setStore("avatar", v.avatar)
+    setStore("departmentTitle", v.departmentTitle)
+    setStore("type", v.type)
   }
 
   return {
     nickname,
     avatar,
+    departmentTitle,
+    type,
     setUserInfo
   }
 }

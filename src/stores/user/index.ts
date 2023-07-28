@@ -3,6 +3,6 @@ import useUser from "./useUser"
 
 export const useUserStore = defineStore("user", () => {
   // 用户信息
-  const { avatar, nickname, setUserInfo } = useUser()
-  return { avatar, nickname, setUserInfo }
+  const { avatar, nickname, departmentTitle, type, setUserInfo } = useUser()
+  return { avatar, nickname, departmentTitle, type, setUserInfo }
 })

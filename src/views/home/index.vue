@@ -13,10 +13,10 @@
                       <a-avatar
                         v-if="avatar"
                         :src="avatar"
-                        size="60"
+                        :size="60"
                         class="avatar-img"
                       ></a-avatar>
-                      <a-avatar v-else size="60" class="avatar-icon"
+                      <a-avatar v-else :size="60" class="avatar-icon"
                         ><template #icon><UserOutlined /></template
                       ></a-avatar>
                       <div class="info">
@@ -60,13 +60,18 @@
                 <div class="timeline-content">
                   <a-timeline>
                     <a-timeline-item>
-                      <youtube-filled style="color: #fb7299" />
+                      <template #dot>
+                        <youtube-filled style="color: #fb7299" />
+                      </template>
                       <a @click="showVideo = true"
                         >作者亲自制作XBoot文字快闪宣传片</a
                       >
                     </a-timeline-item>
+
                     <a-timeline-item>
-                      <youtube-filled style="color: #fb7299" />
+                      <template #dot>
+                        <youtube-filled style="color: #fb7299"
+                      /></template>
                       <a
                         href="https://www.bilibili.com/video/av23121122/"
                         target="_blank"
@@ -74,7 +79,9 @@
                       >
                     </a-timeline-item>
                     <a-timeline-item>
-                      <box-plot-filled style="color: black" />
+                      <template #dot>
+                        <box-plot-filled style="color: black"
+                      /></template>
                       <a
                         href="https://github.com/Exrick/Machine-Learning"
                         target="_blank"
@@ -82,20 +89,28 @@
                       >
                     </a-timeline-item>
                     <a-timeline-item>
-                      <shopping-cart-outlined style="color: #f4364c" />
+                      <template #dot>
+                        <shopping-cart-outlined style="color: #f4364c"
+                      /></template>
                       <a href="http://xmall.exrick.cn" target="_blank"
                         >XMall开源分布式商城</a
                       >
                     </a-timeline-item>
                     <a-timeline-item>
-                      <money-collect-filled style="color: #19be6b" />
+                      <template #dot>
+                        <money-collect-filled style="color: #19be6b"
+                      /></template>
                       <a href="http://xpay.exrick.cn" target="_blank"
                         >XPay开源个人免签支付系统</a
                       >
                     </a-timeline-item>
                     <a-timeline-item>
-                      <question-circle-filled style="color: #57a3f3" />
-                      >QQ交流群 475743731(付费) 562962309(免费)
+                      <template #dot>
+                        <question-circle-filled style="color: #57a3f3"
+                      /></template>
+                      <a href="http://xpay.exrick.cn" target="_blank"
+                        >QQ交流群 475743731(付费) 562962309(免费)</a
+                      >
                     </a-timeline-item>
                   </a-timeline>
                 </div>
@@ -129,8 +144,11 @@
                     type="warning"
                     show-icon
                     style="padding: 8px 8px 8px 36px; font-size: 12px"
-                    >价格上调提示：App端开发中，价格即将上调，请尽快获取！永久更新！</a-alert
                   >
+                    <template #description>
+                      价格上调提示：App端开发中，价格即将上调，请尽快获取！永久更新！
+                    </template>
+                  </a-alert>
                   <div class="flex">
                     完整版(仅供学习)：
                     <span class="rmb">￥</span>
@@ -140,10 +158,14 @@
                     <a-button
                       to="http://xpay.exrick.cn/pay?xboot"
                       target="_blank"
-                      type="error"
-                      icon="ios-paper-plane"
+                      type="primary"
+                      danger
                       style="margin-left: 10px"
-                      >立即获取</a-button
+                    >
+                      <template #icon>
+                        <highlight-filled />
+                      </template>
+                      立即获取</a-button
                     >
                   </div>
                   <div class="flex">
@@ -156,22 +178,24 @@
                     <a-button
                       to="http://wpa.qq.com/msgrd?v=3&uin=1012139570&site=qq&menu=yes"
                       target="_blank"
-                      type="warning"
-                      icon="logo-vimeo"
-                      style="margin-left: 10px"
+                      type="primary"
+                      style="margin-left: 10px; background-color: #ffa825"
+                      ><template #icon> <gitlab-filled /> </template
                       >获取商用授权</a-button
                     >
                     <br />
                   </div>
                   <a-alert style="padding: 8px 16px 8px 16px; font-size: 12px">
-                    支付后源码和更新维护群将自动发至您在支付页面所填写的邮箱，
-                    <span class="light">
-                      完整版与商用版都拥有在线demo全部功能，提供永久免费更新，但前者仅供学习使用。</span
-                    >
-                    开源版本请遵循GPLv3.0开源协议，
-                    <span class="light">不得闭源</span
-                    >，商用需求请联系作者签署授权协议。
-                    价格可能随功能逐渐完善或物价变化。
+                    <template #description>
+                      支付后源码和更新维护群将自动发至您在支付页面所填写的邮箱，
+                      <span class="light">
+                        完整版与商用版都拥有在线demo全部功能，提供永久免费更新，但前者仅供学习使用。</span
+                      >
+                      开源版本请遵循GPLv3.0开源协议，
+                      <span class="light">不得闭源</span
+                      >，商用需求请联系作者签署授权协议。
+                      价格可能随功能逐渐完善或物价变化。
+                    </template>
                   </a-alert>
                 </div>
               </a-card>
@@ -188,127 +212,162 @@
           </a-row>
         </a-col>
       </a-row>
+
+      <a-row
+        :gutter="10"
+        style="height: 166px; overflow: hidden; margin-bottom: 10px"
+      >
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="6"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card style="height: 100%">
+            <a-card-meta>
+              <template #avatar>
+                <money-collect-outlined style="font-size: 34px" />
+              </template>
+            </a-card-meta>
+            <a-card-meta title="Europe Street beat">
+              <template #description>www.instagram.com</template>
+            </a-card-meta>
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="6"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card style="height: 100%">
+            <p>销售量增长</p>
+            <p><span>68%</span><span>相比昨日</span></p>
+            <a-progress :percent="68" :show-info="false" />
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="6"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card style="height: 100%"
+            ><p>待办事项</p>
+            <p>2023年07月28日</p>
+            <p>您有一个新的待审批任务，请前往查看</p></a-card
+          >
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="6"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card style="height: 100%">
+            <a-card-meta>
+              <template #avatar>
+                <appstore-filled style="font-size: 34px" />
+              </template>
+            </a-card-meta>
+            <a-card-meta title="应用中心">
+              <template #description>销量统计，用户统计，日活分析</template>
+            </a-card-meta>
+          </a-card>
+        </a-col>
+      </a-row>
+
+      <a-row :gutter="10" class="sec">
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="4"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card>
+            <div class="center">
+              <container-filled style="font-size: 34px" />
+              <span>SaaS应用</span>
+            </div>
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="4"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card>
+            <div class="center">
+              <container-filled style="font-size: 34px" />
+              <span>SaaS应用</span>
+            </div>
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="4"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card>
+            <div class="center">
+              <container-filled style="font-size: 34px" />
+              <span>SaaS应用</span>
+            </div>
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="4"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card>
+            <div class="center">
+              <container-filled style="font-size: 34px" />
+              <span>SaaS应用</span>
+            </div>
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="4"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card>
+            <div class="center">
+              <container-filled style="font-size: 34px" />
+              <span>SaaS应用</span>
+            </div>
+          </a-card>
+        </a-col>
+        <a-col
+          :xs="24"
+          :sm="24"
+          :md="12"
+          :lg="4"
+          :style="{ marginBottom: '10px' }"
+        >
+          <a-card>
+            <div class="center">
+              <container-filled style="font-size: 34px" />
+              <span>SaaS应用</span>
+            </div>
+          </a-card>
+        </a-col>
+      </a-row>
       <!--
-      <a-row :gutter="10">
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="6"
-          :style="{ marginBottom: '10px' }"
-        >
-          <card1
-            id="card1"
-            prefix="￥"
-            :end-val="count.data1"
-            title="今日销售额"
-            :image="require('@/assets/icon/money.png')"
-            width="34px"
-            height="34px"
-          />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="6"
-          :style="{ marginBottom: '10px' }"
-        >
-          <card2
-            id="card2"
-            suffix="%"
-            :end-val="count.data2"
-            color="#f90"
-            title="销售量增长"
-            description="相比昨日"
-          />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="6"
-          :style="{ marginBottom: '10px' }"
-        >
-          <card4
-            title="待办事项"
-            :time="time"
-            description="您有一个新的待审批任务，请前往查看"
-          />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="6"
-          :style="{ marginBottom: '10px' }"
-        >
-          <card3
-            title="应用中心"
-            description="销量统计，用户统计，日活分析"
-            :image="require('@/assets/icon/app.png')"
-            width="34px"
-            height="34px"
-            titleSize="18px"
-          />
-        </a-col>
-      </a-row>
-      <a-row :gutter="10">
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="4"
-          :style="{ marginBottom: '10px' }"
-        >
-          <cardApp icon="logo-buffer" title="SaaS应用" />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="4"
-          :style="{ marginBottom: '10px' }"
-        >
-          <cardApp activeColor="#2db7f5" icon="md-bookmarks" title="日志分析" />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="4"
-          :style="{ marginBottom: '10px' }"
-        >
-          <cardApp activeColor="#19be6b" icon="md-cloud" title="云运维" />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="4"
-          :style="{ marginBottom: '10px' }"
-        >
-          <cardApp activeColor="#f90" icon="md-film" title="视频监控" />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="4"
-          :style="{ marginBottom: '10px' }"
-        >
-          <cardApp activeColor="#8950fc" icon="md-stats" title="数据分析" />
-        </a-col>
-        <a-col
-          :xs="24"
-          :sm="24"
-          :md="12"
-          :lg="4"
-          :style="{ marginBottom: '10px' }"
-        >
-          <cardApp activeColor="#ed4014" icon="md-people" title="用户分析" />
-        </a-col>
-      </a-row>
       <a-row :gutter="10">
         <a-col
           :xs="24"
@@ -385,7 +444,7 @@
             title="月活"
           />
         </a-col>
-      </a-row>
+      </a-row>-->
       <a-row :gutter="10">
         <a-col
           :xs="24"
@@ -406,7 +465,6 @@
           <visitSeparation />
         </a-col>
       </a-row>
-      -->
     </div>
     <div v-if="currNavName == 'app'">
       <h1>app</h1>
@@ -434,7 +492,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { storeToRefs } from "pinia"
 import {
   GithubFilled,
@@ -445,21 +503,29 @@ import {
   QuestionCircleFilled,
   BookOutlined,
   StarFilled,
-  UserOutlined
+  UserOutlined,
+  HighlightFilled,
+  GitlabFilled,
+  MoneyCollectOutlined,
+  AppstoreFilled,
+  ContainerFilled
 } from "@ant-design/icons-vue"
 import { useAppStore, useUserStore } from "../../stores"
 // 从store中读取信息
 const appStore = useAppStore()
 const userStore = useUserStore()
 const { currNavName } = storeToRefs(appStore)
-const { avatar, nickname } = storeToRefs(userStore)
+const { avatar, nickname, departmentTitle, type } = storeToRefs(userStore)
 
 // 组件内变量
 const showVideo = ref(false)
 const city = ref("未知")
-const departmentTitle = ref("无")
-const userType = ref("无")
 const price = ref("...")
+
+// 用户类型
+const userType = computed(() => {
+  return type.value === 1 ? "管理员" : "普通用户"
+})
 </script>
 
 <style scoped lang="scss">

@@ -33,7 +33,7 @@
                       allowClear
                     >
                       <template #prefix>
-                        <user-outlined type="user" />
+                        <user-outlined />
                       </template>
                     </a-input>
                   </a-form-item>

@@ -1,5 +1,6 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
+import VueApexCharts from "vue3-apexcharts"
 // 全局引入图片验证码组件
 import SlideVerify from "vue-monoplasty-slide-verify/src/lib/index.js"
 import i18n from "@/locale"
@@ -18,4 +19,5 @@ app
   .use(i18n)
   .use(commonFunc)
   .use(SlideVerify)
+  .use(VueApexCharts)
   .mount("#app")
