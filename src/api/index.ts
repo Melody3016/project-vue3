@@ -73,3 +73,8 @@ export const userInfo = () => {
 export const getMenuList = () => {
   return getRequest<IData<IMenuListRes[]>>("/permission/getMenuList", null)
 }
+
+// 获取vaptcha配置
+export const getOtherSet = () => {
+  return getRequest<IData<IOtherSetRes>>("/setting/other", null)
+}

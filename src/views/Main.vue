@@ -3,7 +3,7 @@
     <!-- 顶部导航条 -->
     <a-layout-header class="header">
       <!-- logo-->
-      <div class="fix-logo" @click="$router.push('/')">
+      <div class="fix-logo" @click="toHome">
         <img src="@/assets/logo-white.png" key="max-logo" />
       </div>
 
@@ -41,6 +41,26 @@
           </a>
         </a-menu-item>
       </a-menu>
+      <!-- 顶部右侧按钮 -->
+      <div class="header-right-content">
+        <!-- <search :theme="navTheme" :type="searchType" v-if="showSearch" />
+        <navApp
+          :currNav="currNav"
+          :navList="navList"
+          :type="navShowType"
+          @on-click="selectNav"
+          v-if="navType == 3"
+        />-->
+        <full-screen
+          v-model="isFullScreen"
+          @on-change="fullscreenChange"
+        ></full-screen>
+        <lang-switch></lang-switch>
+        <!--<language />
+        <message-tip />-->
+        <user />
+        <!-- <theme /> -->
+      </div>
     </a-layout-header>
 
     <a-layout>
@@ -54,6 +74,8 @@
         <a-menu
           v-model:selectedKeys="selectedKeys"
           mode="inline"
+          :open-keys="openKeys"
+          @openChange="onOpenChange"
           @click="itemClick"
         >
           <a-sub-menu v-for="item in menuList" :key="item.name">
@@ -68,13 +90,17 @@
         </a-menu>
       </a-layout-sider>
       <!-- Tags 标签 -->
-
+      <div class="nav-tags">
+        <tags-page-opened :pageTagsList="pageTagsList" />
+      </div>
       <!-- 页面部分 -->
-      <a-layout-content style="overflow: auto; padding: 20px">
-        <RouterView></RouterView>
-        <!-- 页面页脚 -->
-        <div class="main-page-footer-content" v-if="showFooter">
-          <Footer class="main-page-footer"></Footer>
+      <a-layout-content style="overflow: auto">
+        <div>
+          <RouterView style="padding: 60px 20px 20px 20px"></RouterView>
+          <!-- 页面页脚 -->
+          <div class="main-page-footer-content" v-if="showFooter">
+            <Footer class="main-page-footer"></Footer>
+          </div>
         </div>
       </a-layout-content>
     </a-layout>
@@ -86,19 +112,29 @@ import {
   MenuFoldOutlined,
   AppstoreOutlined
 } from "@ant-design/icons-vue"
-import { onMounted, ref, watch } from "vue"
+import { onMounted, ref, watch, reactive } from "vue"
 import { storeToRefs } from "pinia"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import type {
   MenuClickEventHandler,
   MenuInfo
 } from "ant-design-vue/es/menu/src/interface"
 import { setStore, getStore } from "@/libs/localStroage"
 import { useAppStore, useUserStore } from "@/stores"
+import utils from "@/utils/utils"
+import { userInfo } from "@/api"
+import type { Key } from "ant-design-vue/es/_util/type"
 
 const $router = useRouter()
+const route = useRoute()
 const collapsed = ref(false)
-const selectedKeys = ref<string[]>(["1"])
+
+// 是否为全屏状态
+const isFullScreen = ref(false)
+const fullscreenChange = (value: boolean) => {
+  // isFullScreen.value = value
+  console.log("全屏状态：", value)
+}
 
 // 是否展示页脚
 const showFooter = ref(true)
@@ -107,14 +143,7 @@ const showFooter = ref(true)
 const appStore = useAppStore()
 const userStore = useUserStore()
 const { currNavName, navList, menuList, menuData } = storeToRefs(appStore)
-const { handleMenuList, handleNavList, getCurrNavName } = appStore
-
-// 导航条数据
-const current = ref<string[]>([currNavName.value])
-
-watch(currNavName, (newVal) => {
-  current.value[0] = newVal
-})
+const { handleMenuList, handleNavList, getCurrNavName, getMenuData } = appStore
 
 // 切换菜单
 const changeNav: MenuClickEventHandler = ({ key }) => {
@@ -128,23 +157,122 @@ const itemClick = ({ keyPath }: MenuInfo) => {
   const path = "/" + keyPath?.join("/")
   $router.push(path)
 }
-onMounted(() => {
+
+// 菜单数据
+const selectedKeys = ref<string[]>([])
+const rootSubmenuKeys = ref<string[]>([])
+const openKeys = ref<Key[]>([])
+
+rootSubmenuKeys.value = menuList.value.map((item) => item.name)
+
+// 监听路由，根据路由信息设置菜单选中状态
+watch(
+  () => route.name,
+  (newName) => {
+    if (!newName) return
+    selectedKeys.value = [newName as string]
+    // 对home特殊处理
+    if (selectedKeys.value[0] === "HomeIndex") {
+      // 清除菜单选中信息
+      openKeys.value = []
+      selectedKeys.value = []
+    }
+  }
+)
+watch(
+  () => route.meta.sub,
+  (newSub) => {
+    if (!newSub) return
+    onOpenChange([newSub as Key])
+  }
+)
+
+// 根据路由信息设置菜单选中状态
+const setMenuSelected = () => {
+  const key = route.name as string
+  selectedKeys.value = [key]
+  const sub = route.meta.sub as string
+  openKeys.value = [sub]
+}
+// 收起其他展开的所有菜单
+const onOpenChange = (keys: Key[]) => {
+  // 找到后面点击的subItem
+  const latestOpenKey = keys.find((key) => openKeys.value.indexOf(key) === -1)
+  // if (rootSubmenuKeys.value.indexOf(latestOpenKey) === -1) {
+  //   openKeys.value = keys
+  // } else {
+  //   openKeys.value = latestOpenKey ? [latestOpenKey] : []
+  // }
+  openKeys.value = latestOpenKey ? [latestOpenKey] : []
+}
+
+// 导航条数据
+const current = ref<string[]>([currNavName.value])
+watch(currNavName, (newVal) => {
+  current.value[0] = newVal
+})
+
+const toHome = () => {
+  // 清除菜单选中信息
+  openKeys.value = []
+  selectedKeys.value = []
+  $router.push("/home")
+}
+
+// tagList
+const pageTagsList = reactive([
+  { name: "user-manage", title: "用户管理" },
+  { name: "role-manage", title: "角色权限管理" },
+  { name: "menu-manage", title: "菜单权限管理" },
+  { name: "apply-manage", title: "我的申请" },
+  { name: "todo-manage", title: "我的待办" }
+])
+
+// 初始化用户信息
+const initUserInfo = async () => {
+  let nickname = getStore("nickname") || ""
+  let avatar = getStore("avatar") || ""
+  let departmentTitle = getStore("departmentTitle") || ""
+  let type = Number(getStore("type")) || 0
+  // 任意一项为空，则重新调接口获取
+  if (!(nickname && avatar && departmentTitle && type)) {
+    // 获取用户信息
+    const [error, res] = await utils.awaitWrap(userInfo())
+    if (error || !res) {
+      // 错误处理
+      return
+    }
+    if (res.result) {
+      nickname = res.result.nickname
+      avatar = res.result.avatar
+      departmentTitle = res.result.departmentTitle
+      type = res.result.type
+      setStore("userInfo", res.result)
+    }
+  }
+  // 设置用户信息
+  const { setUserInfo } = userStore
+  setUserInfo({
+    nickname,
+    avatar,
+    departmentTitle,
+    type
+  })
+}
+
+onMounted(async () => {
+  // 获取菜单数据
+  await getMenuData()
   // 获取当前选中导航
   getCurrNavName()
-  // 获取菜单数据
-  // getMenuData()
   // 获取navList
   handleNavList(menuData.value)
   // 获取menuList
   handleMenuList(currNavName.value, menuData.value)
   // 设置用户信息
-  const { setUserInfo } = userStore
-  setUserInfo({
-    nickname: getStore("nickname") || "",
-    avatar: getStore("avatar") || "",
-    departmentTitle: getStore("departmentTitle") || "",
-    type: Number(getStore("type")) || 0
-  })
+  initUserInfo()
+  // 设置菜单选中状态
+  setMenuSelected()
 })
 </script>
 <style lang="scss" scoped>
@@ -156,6 +284,7 @@ onMounted(() => {
     overflow: hidden;
     color: #fff;
     background: #2d8cf0;
+    position: relative;
 
     .fix-logo {
       cursor: pointer;
@@ -193,6 +322,34 @@ onMounted(() => {
         background-color: #4298f2;
       }
     }
+    .header-right-content {
+      display: flex;
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 60px;
+      // background-color: black;
+
+      .lang-icon {
+        top: -2px;
+        right: 0;
+        position: relative;
+
+        & > :deep(a) {
+          color: #fff;
+        }
+      }
+    }
+  }
+  .nav-tags {
+    position: fixed;
+    top: 60px;
+    box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.1);
+    z-index: 1;
+    transition: padding 0.3s;
+    height: 40px;
+    width: 100%;
+    background-color: #f0f2f5;
   }
   .ant-layout-sider {
     background: #fff;

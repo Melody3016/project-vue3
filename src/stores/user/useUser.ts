@@ -1,5 +1,6 @@
 import { ref } from "vue"
-import { setStore } from "@/libs/localStroage"
+import { setStore, getStore } from "@/libs/localStroage"
+import Cookies from "js-cookie"
 
 export default () => {
   // 昵称头像
@@ -25,12 +26,24 @@ export default () => {
     setStore("type", v.type)
   }
 
+  // 退出登录
+  const logout = () => {
+    Cookies.remove("userInfo")
+    // 清空打开的页面等数据 保留语言、主题等配置数据
+    const lang = getStore("lang"),
+      theme = getStore("theme")
+    localStorage.clear()
+    setStore("lang", lang)
+    setStore("theme", theme)
+  }
+
   return {
     nickname,
     avatar,
     departmentTitle,
     type,
-    setUserInfo
+    setUserInfo,
+    logout
   }
 }
 

@@ -81,3 +81,10 @@ interface IMenuListRes {
   url: string
   children: IMenuListRes[] | null
 }
+
+// 获取vaptcha配置返回类型
+interface IOtherSetRes {
+  blacklist: string // ip黑名单
+  domain: string // 域名
+  ssoDomain: string // 单点登录域名
+}

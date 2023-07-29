@@ -26,7 +26,6 @@ export default () => {
   const menuList = ref<IMenuListRes[]>([])
   const currNavName = ref("")
   const dynamicRoutes = ref<RouteRecordRaw[]>([])
-
   const otherRoutes = reactive<RouteRecordRaw[]>([
     {
       path: "/:pathMatch(.*)*",
@@ -39,6 +38,7 @@ export default () => {
       component: lazyLoading("error-page/404")
     }
   ])
+  const hasMenuData = ref(false)
 
   // 获取菜单数据
   const getMenuData = async () => {
@@ -48,6 +48,8 @@ export default () => {
       // 未登录
       return
     }
+    // 判断是否已经获取过菜单数据
+    if (hasMenuData.value) return
     // 获取菜单数据
     const [err, res] = await utils.awaitWrap(getMenuList())
     isLoading.value = false
@@ -56,6 +58,8 @@ export default () => {
       return
     }
     menuData.value = res.result || []
+    // 标识已经获取菜单数据
+    hasMenuData.value = true
   }
 
   // 动态添加路由
@@ -107,6 +111,9 @@ export default () => {
       }
 
       const meta: any = {}
+      // 用于subMenu处于展示状态
+      const sub = item.component.split("/")[0]
+      meta.sub = sub
       // 给页面添加权限、标题、第三方网页链接
       meta.permTypes = item.permTypes ? item.permTypes : null
       meta.title = item.title
@@ -148,6 +155,7 @@ export default () => {
         menuList.value = item.children || []
       }
     }
+    currNavName.value = name as string
   }
 
   const getCurrNavName = () => {
