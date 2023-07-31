@@ -40,6 +40,13 @@ export default () => {
   ])
   const hasMenuData = ref(false)
 
+  // 标识是否已经添加动态路由
+  const hasAddRoute = ref(false)
+
+  const setHasAddRoute = (bool: boolean) => {
+    hasAddRoute.value = bool
+  }
+
   // 获取菜单数据
   const getMenuData = async () => {
     // 判断用户是否登录
@@ -116,6 +123,7 @@ export default () => {
       meta.sub = sub
       // 给页面添加权限、标题、第三方网页链接
       meta.permTypes = item.permTypes ? item.permTypes : null
+      meta.oriTitle = item.title
       meta.title = item.title
         ? item.title + " - XBoot一站式前后端分离快速开发平台 By: Exrick"
         : null
@@ -210,11 +218,13 @@ export default () => {
     menuList,
     otherRoutes,
     dynamicRoutes,
+    hasAddRoute,
     getMenuData,
     getCurrNavName,
     getDynamicRoutes,
     handleMenuList,
     handleNavList,
-    dynamicAddRoute
+    dynamicAddRoute,
+    setHasAddRoute
   }
 }

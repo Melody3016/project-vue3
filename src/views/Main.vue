@@ -90,13 +90,16 @@
         </a-menu>
       </a-layout-sider>
       <!-- Tags 标签 -->
-      <div class="nav-tags">
-        <tags-page-opened :pageTagsList="pageTagsList" />
-      </div>
+
       <!-- 页面部分 -->
-      <a-layout-content style="overflow: auto">
-        <div>
-          <RouterView style="padding: 60px 20px 20px 20px"></RouterView>
+      <a-layout-content
+        style="height: 100%; display: flex; flex-direction: column"
+      >
+        <div class="nav-tags">
+          <tags-page-opened />
+        </div>
+        <div style="padding: 0px 20px 20px 20px; overflow: auto">
+          <RouterView></RouterView>
           <!-- 页面页脚 -->
           <div class="main-page-footer-content" v-if="showFooter">
             <Footer class="main-page-footer"></Footer>
@@ -112,7 +115,7 @@ import {
   MenuFoldOutlined,
   AppstoreOutlined
 } from "@ant-design/icons-vue"
-import { onMounted, ref, watch, reactive } from "vue"
+import { onMounted, ref, watch } from "vue"
 import { storeToRefs } from "pinia"
 import { useRoute, useRouter } from "vue-router"
 import type {
@@ -143,7 +146,7 @@ const showFooter = ref(true)
 const appStore = useAppStore()
 const userStore = useUserStore()
 const { currNavName, navList, menuList, menuData } = storeToRefs(appStore)
-const { handleMenuList, handleNavList, getCurrNavName, getMenuData } = appStore
+const { handleMenuList, handleNavList, getCurrNavName } = appStore
 
 // 切换菜单
 const changeNav: MenuClickEventHandler = ({ key }) => {
@@ -219,15 +222,6 @@ const toHome = () => {
   $router.push("/home")
 }
 
-// tagList
-const pageTagsList = reactive([
-  { name: "user-manage", title: "用户管理" },
-  { name: "role-manage", title: "角色权限管理" },
-  { name: "menu-manage", title: "菜单权限管理" },
-  { name: "apply-manage", title: "我的申请" },
-  { name: "todo-manage", title: "我的待办" }
-])
-
 // 初始化用户信息
 const initUserInfo = async () => {
   let nickname = getStore("nickname") || ""
@@ -262,7 +256,7 @@ const initUserInfo = async () => {
 
 onMounted(async () => {
   // 获取菜单数据
-  await getMenuData()
+  // await getMenuData()
   // 获取当前选中导航
   getCurrNavName()
   // 获取navList
@@ -342,16 +336,15 @@ onMounted(async () => {
     }
   }
   .nav-tags {
-    position: fixed;
-    top: 60px;
     box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.1);
-    z-index: 1;
     transition: padding 0.3s;
     height: 40px;
     width: 100%;
     background-color: #f0f2f5;
+    margin-bottom: 10px;
   }
   .ant-layout-sider {
+    z-index: 10;
     background: #fff;
     overflow: auto;
     &::-webkit-scrollbar {

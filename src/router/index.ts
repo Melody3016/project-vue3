@@ -1,15 +1,25 @@
 import { createRouter, createWebHistory } from "vue-router"
 import Cookie from "js-cookie"
 import NProgress from "nprogress"
+import { storeToRefs } from "pinia"
 import { single, other } from "./routers"
 import util from "@/utils/utils"
 import { useAppStore } from "@/stores"
-import { storeToRefs } from "pinia"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [...single, ...other]
 })
+const singleName = [
+  "Login",
+  "LoginQr",
+  "Register",
+  "RegisterResult",
+  "Relate",
+  "Reset",
+  "Authorize"
+]
+
 // 路由拦截
 router.beforeEach(async (to, from, next) => {
   util.title(to.meta.title as string)
@@ -18,17 +28,7 @@ router.beforeEach(async (to, from, next) => {
   // 目标路由名称
   const name = to.name
   // 是否为单独路由
-  const isSingle =
-    name &&
-    [
-      "Login",
-      "LoginQr",
-      "Register",
-      "RegisterResult",
-      "Relate",
-      "Reset",
-      "Authorize"
-    ].includes(name as string)
+  const isSingle = name && singleName.includes(name as string)
   if (!Cookie.get("userInfo") && !isSingle) {
     // 未登录且访问的不是单独路由
     next({
@@ -63,9 +63,23 @@ router.beforeEach(async (to, from, next) => {
   }
 })
 
-router.afterEach(() => {
+// 全局后置守卫
+router.afterEach((to) => {
   // 结束顶部加载条
   NProgress.done()
+  // 添加tags
+  // 目标路由名称
+  const name = to.name
+  // 是否为单独路由
+  const isSingle = name && singleName.includes(name as string)
+  if (!isSingle) {
+    // 代表是后台界面中的动态路由
+    const appStore = useAppStore()
+    const { addTags } = appStore
+    if (to.name && to.meta.oriTitle) {
+      addTags({ name: to.name as string, title: to.meta.oriTitle as string })
+    }
+  }
 })
 
 export default router
