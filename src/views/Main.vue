@@ -58,7 +58,7 @@
         <lang-switch></lang-switch>
         <!--<language />
         <message-tip />-->
-        <user />
+        <user class="user" />
         <!-- <theme /> -->
       </div>
     </a-layout-header>
@@ -325,12 +325,27 @@ onMounted(async () => {
       // background-color: black;
 
       .lang-icon {
+        font-size: 24px;
         top: -2px;
         right: 0;
         position: relative;
+        margin: 0 12px;
 
         & > :deep(a) {
           color: #fff;
+        }
+      }
+
+      .user {
+        margin-left: 10px;
+        margin-right: 20px;
+
+        :deep(.header-right-icon) {
+          height: 60px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 80px;
         }
       }
     }

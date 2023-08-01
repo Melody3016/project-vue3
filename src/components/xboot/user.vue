@@ -1,6 +1,6 @@
 <template>
   <div style="display: inline-block">
-    <a-dropdown :trigger="['hover']">
+    <a-dropdown :trigger="['hover']" placement="bottom">
       <div style="display: inline-block">
         <div class="header-right-icon header-user header-action">
           <a-avatar v-if="avatar" :src="avatar" size="small"></a-avatar>
