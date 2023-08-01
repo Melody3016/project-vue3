@@ -91,15 +91,15 @@ export default () => {
   ) => {
     for (const item of menuData) {
       if (item.type === -1 && item.children) {
-        handleRoute(dynamicRoutes, item.children)
+        handleRoute(dynamicRoutes, item)
       }
     }
   }
 
   // 将后台返回的数据封装为路由格式
-  const handleRoute = (routes: RouteRecordRaw[], data: IMenuListRes[]) => {
-    if (!data) return
-    for (const item of data) {
+  const handleRoute = (routes: RouteRecordRaw[], data: IMenuListRes) => {
+    if (!data.children) return
+    for (const item of data.children) {
       const route: any = {}
       route.name = item.name
       route.path = item.path
@@ -114,13 +114,13 @@ export default () => {
 
       if (item.children && item.children.length > 0) {
         route.children = []
-        handleRoute(route.children, item.children)
+        handleRoute(route.children, item)
       }
 
       const meta: any = {}
       // 用于subMenu处于展示状态
-      const sub = item.component.split("/")[0]
-      meta.sub = sub
+      // const sub = item.component.split("/")[0]
+      meta.sub = data.name
       // 给页面添加权限、标题、第三方网页链接
       meta.permTypes = item.permTypes ? item.permTypes : null
       meta.oriTitle = item.title
