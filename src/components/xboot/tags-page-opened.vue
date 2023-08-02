@@ -103,7 +103,6 @@ watch(
     await nextTick()
     // 将当前的tag移动到最左侧
     if (!tags.value) return
-    console.log(tags)
     const collection = tags.value.children
     Array.prototype.forEach.call(collection, (item) => {
       if (newTitle == item.innerText) {

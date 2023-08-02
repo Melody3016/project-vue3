@@ -1,0 +1,36 @@
+.containers {
+  .my-form {
+    display: flex;
+    flex-wrap: wrap;
+    .ant-form-item {
+      margin-right: 20px;
+      width: 250px;
+    }
+  }
+
+  .btn-box {
+    display: flex;
+    justify-content: space-between;
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 20px;
+
+    .btn-right {
+      .anticon {
+        font-size: 16px;
+        margin-left: 20px;
+      }
+    }
+  }
+
+  .table-area {
+    .info {
+      height: 34px;
+      margin-bottom: 10px;
+    }
+    .my-pagination {
+      margin-top: 20px;
+      text-align: right;
+    }
+  }
+}
