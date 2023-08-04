@@ -2,6 +2,7 @@
   "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "./components.d.ts"],
   "compilerOptions": {
+    "ignoreDeprecations": "5.0", //加入这句代码即可
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

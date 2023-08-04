@@ -78,3 +78,8 @@ export const getMenuList = () => {
 export const getOtherSet = () => {
   return getRequest<IData<IOtherSetRes>>("/setting/other", null)
 }
+
+// 获取用户数据 多条件
+export const getUserListData = (params: IUserListParam) => {
+  return getRequest<IData<IUserListRes>>("/user/getByCondition", params)
+}

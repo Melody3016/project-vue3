@@ -1,18 +1,17 @@
 .containers {
-  .my-form {
-    display: flex;
-    flex-wrap: wrap;
-    .ant-form-item {
-      margin-right: 20px;
-      width: 250px;
+  .search-box {
+    .my-form {
+      display: flex;
+      flex-wrap: wrap;
+      .ant-form-item {
+        margin-right: 20px;
+        width: 250px;
+      }
     }
   }
 
   .btn-box {
-    display: flex;
-    justify-content: space-between;
     height: 40px;
-    line-height: 40px;
     margin-bottom: 20px;
 
     .btn-right {
@@ -23,14 +22,15 @@
     }
   }
 
-  .table-area {
+  .info-box {
+    margin-bottom: 10px;
     .info {
       height: 34px;
-      margin-bottom: 10px;
+      width: 100%;
     }
-    .my-pagination {
-      margin-top: 20px;
-      text-align: right;
-    }
+  }
+
+  .table-area {
+    margin-bottom: 20px;
   }
 }

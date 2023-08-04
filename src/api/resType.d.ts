@@ -49,8 +49,6 @@ interface IUserInfoRes {
   nickname: string
   passStrength: string
   password: string
-  permissions?: permissionsStates[]
-  roles?: rolesStates[]
   sex: string
   status: number
   street: string
@@ -58,6 +56,8 @@ interface IUserInfoRes {
   updateBy: string
   updateTime: string
   username: string
+  permissions?: permissionsStates[]
+  roles?: rolesStates[]
 }
 
 // 菜单接口返回类型
@@ -87,4 +87,32 @@ interface IOtherSetRes {
   blacklist: string // ip黑名单
   domain: string // 域名
   ssoDomain: string // 单点登录域名
+}
+
+interface Sort {
+  empty: boolean
+  sorted: boolean
+  unsorted: boolean
+}
+interface Pageable {
+  offset: number
+  pageNumber: number
+  pageSize: number
+  paged: boolean
+  sort: Sort
+  unpaged: boolean
+}
+// 条件查询用户列表返回类型
+interface IUserListRes {
+  content: IUserInfoRes[]
+  empty: boolean
+  first: boolean
+  last: boolean
+  number: number
+  numberOfElements: number
+  pageable: Pageable
+  size: number
+  sort: Sort
+  totalElements: number
+  totalPages: number
 }

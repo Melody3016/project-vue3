@@ -15,7 +15,8 @@ module.exports = {
   rules: {
     indent: ["error", 2, { SwitchCase: 1 }],
     semi: ["error", "never"],
-    "vue/multi-word-component-names": 0
+    "vue/multi-word-component-names": 0,
+    "no-debugger": 1
   },
   overrides: [
     {
