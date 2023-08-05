@@ -146,7 +146,7 @@ const showFooter = ref(true)
 const appStore = useAppStore()
 const userStore = useUserStore()
 const { currNavName, navList, menuList, menuData } = storeToRefs(appStore)
-const { handleMenuList, handleNavList, getCurrNavName } = appStore
+const { handleMenuList, handleNavList, getCurrNavName, getMenuData } = appStore
 
 // 切换菜单
 const changeNav: MenuClickEventHandler = ({ key }) => {
@@ -255,6 +255,7 @@ const initUserInfo = async () => {
 }
 
 onMounted(async () => {
+  // debugger
   // 获取菜单数据
   // await getMenuData()
   // 获取当前选中导航

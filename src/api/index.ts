@@ -83,3 +83,28 @@ export const getOtherSet = () => {
 export const getUserListData = (params: IUserListParam) => {
   return getRequest<IData<IUserListRes>>("/user/getByCondition", params)
 }
+
+// 获取一级部门
+export const initDepartment = (params?: { openDataFilter?: boolean }) => {
+  return getRequest<IData<IDepRes[]>>(
+    "/department/getByParentId/0",
+    params || null
+  )
+}
+// 加载部门子级数据
+export const loadDepartment = (
+  id: string,
+  params?: {
+    openDataFilter?: boolean
+  }
+) => {
+  return getRequest<IData<IDepRes[]>>(
+    `/department/getByParentId/${id}`,
+    params || null
+  )
+}
+
+// 删除用户
+export const deleteUser = (params: { ids: string }) => {
+  return postRequest<IData<{}>>("/user/delByIds", params)
+}

@@ -116,3 +116,52 @@ interface IUserListRes {
   totalElements: number
   totalPages: number
 }
+// 部门信息
+interface IDepRes {
+  // 创建者
+  createBy: string
+  // 创建时间 (date-time)
+  createTime: string
+  // 删除标志 默认0
+  delFlag: number
+  // 唯一标识
+  id: string
+  // 是否为父节点(含子节点) 默认false
+  isParent: boolean
+  // 主负责人
+  mainHeader: string[]
+  // 主负责人 	UserVo
+  mainHeaders: {
+    // id
+    id: string
+    // 昵称
+    nickname: string
+    // 账号
+    username: string
+  }[]
+  // 父id
+  parentId: string
+  // 父节点名称
+  parentTitle: string
+  // 排序值
+  sortOrder: number
+  // 是否启用 0启用 -1禁用
+  status: number
+  // 部门名称
+  title: string
+  // 更新者
+  updateBy: string
+  // 更新时间 (date-time)
+  updateTime: string
+  // 副负责人
+  viceHeader: string[]
+  // 副负责人 UserVo
+  viceHeaders: {
+    // id
+    id: string
+    // 昵称
+    nickname: string
+    // 账号
+    username: string
+  }[]
+}

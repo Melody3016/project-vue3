@@ -9,13 +9,17 @@
             <a-input
               v-model:value="searchObj.nickname"
               placeholder="请输入用户名"
+              allowClear
             />
           </a-form-item>
           <a-form-item label="部门" v-bind="validateInfos.department">
             <a-cascader
-              v-model:value="searchObj.department"
-              :options="options"
+              v-model:value="departmentValue"
+              :options="depOptions"
+              :load-data="loadData"
               :show-search="{ filter }"
+              @change="handleDepChange"
+              change-on-select
               placeholder="请选择或输入搜索部门"
             />
           </a-form-item>
@@ -28,6 +32,7 @@
             <a-input
               v-model:value="searchObj.mobile"
               placeholder="请输入手机号"
+              allowClear
             />
           </a-form-item>
           <a-form-item
@@ -35,14 +40,22 @@
             v-bind="validateInfos.email"
             v-show="!isCollapse"
           >
-            <a-input v-model:value="searchObj.email" placeholder="请输入邮箱" />
+            <a-input
+              v-model:value="searchObj.email"
+              placeholder="请输入邮箱"
+              allowClear
+            />
           </a-form-item>
           <a-form-item
             label="性别"
             v-bind="validateInfos.sex"
             v-show="!isCollapse"
           >
-            <a-select v-model:value="searchObj.sex" placeholder="请选择性别">
+            <a-select
+              v-model:value="searchObj.sex"
+              placeholder="请选择性别"
+              allowClear
+            >
               <a-select-option value="男">男</a-select-option>
               <a-select-option value="女">女</a-select-option>
             </a-select>
@@ -55,6 +68,7 @@
             <a-input
               v-model:value="searchObj.username"
               placeholder="请输入登录账号"
+              allowClear
             />
           </a-form-item>
           <a-form-item
@@ -62,21 +76,30 @@
             v-bind="validateInfos.id"
             v-show="!isCollapse"
           >
-            <a-input v-model:value="searchObj.id" placeholder="请输入用户ID" />
+            <a-input
+              v-model:value="searchObj.id"
+              placeholder="请输入用户ID"
+              allowClear
+            />
           </a-form-item>
           <a-form-item
             label="创建时间"
             v-bind="validateInfos.selectDate"
             v-show="!isCollapse"
           >
-            <a-range-picker v-model:value="searchObj.selectDate" />
+            <a-range-picker
+              v-model:value="selectDate"
+              @change="handleDateChange"
+            />
           </a-form-item>
           <a-form-item>
             <a-button type="primary" @click="onSubmit">
               <template #icon><SearchOutlined /></template>
               搜索
             </a-button>
-            <a-button style="margin: 0px 15px 0px 10px">重置</a-button>
+            <a-button style="margin: 0px 15px 0px 10px" @click="handleReset"
+              >重置</a-button
+            >
             <a @click.prevent="isCollapse = !isCollapse"
               >展开<down-outlined v-show="isCollapse" /><up-outlined
                 v-show="!isCollapse"
@@ -88,11 +111,11 @@
       <a-row justify="space-between" align="middle" class="btn-box">
         <!-- 左侧按钮 -->
         <div class="btn-left">
-          <a-button type="primary">
+          <a-button type="primary" @click="addUserVisible = true">
             <template #icon><plus-outlined /></template>
             添加用户
           </a-button>
-          <a-button style="margin: 0px 6px">
+          <a-button style="margin: 0px 6px" @click="handleDelUsers">
             <template #icon><delete-outlined /></template>
             批量删除
           </a-button>
@@ -113,7 +136,9 @@
         </div>
         <!-- 右侧图标按钮 -->
         <div class="btn-right">
-          <a-tooltip title="刷新"><reload-outlined /></a-tooltip>
+          <a-tooltip title="刷新"
+            ><reload-outlined :spin="isSpin" @click="refresh"
+          /></a-tooltip>
           <a-tooltip :title="isSearch ? '关闭搜索' : '开启搜索'">
             <search-outlined @click="isSearch = !isSearch"
           /></a-tooltip>
@@ -140,7 +165,11 @@
       <!-- 提示信息区 -->
       <a-row v-show="isPrompt" class="info-box">
         <a-alert type="info" show-icon class="info">
-          <template #message>已选择 0 项 <a>清空</a></template>
+          <template #message
+            >已选择
+            <span style="color: forestgreen">{{ selectedKeys.length }}</span> 项
+            <a @click.prevent="selectedKeys.splice(0)">清空</a></template
+          >
         </a-alert>
       </a-row>
       <!-- 表格区 -->
@@ -150,10 +179,12 @@
           :columns="columns"
           :data-source="tableData"
           :scroll="{ x: 960 }"
+          rowKey="id"
           :row-selection="rowSelection"
           :pagination="false"
           :size="tableSize"
           :loading="isLoading"
+          @change="handleTableChange"
           bordered
         >
           <template #bodyCell="{ column, record }">
@@ -162,7 +193,9 @@
               <a-divider type="vertical" />
               <a>禁用</a>
               <a-divider type="vertical" />
-              <a>删除</a>
+              <a @click.prevent="handleDelUser(record.id, record.username)"
+                >删除</a
+              >
             </template>
             <template v-if="column.key === 'avatar'">
               <a-avatar :src="record.avatar" />
@@ -197,11 +230,12 @@
         />
       </a-row>
     </a-card>
+    <add-edit v-model:visible="addUserVisible" :type="2"></add-edit>
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref, toRaw } from "vue"
-import { Form } from "ant-design-vue"
+import { createVNode, h, reactive, ref, toRaw } from "vue"
+import { Form, message, Modal } from "ant-design-vue"
 import {
   SearchOutlined,
   DownOutlined,
@@ -210,44 +244,57 @@ import {
   DeleteOutlined,
   ReloadOutlined,
   BulbOutlined,
-  AlignLeftOutlined
+  AlignLeftOutlined,
+  ExclamationCircleOutlined
 } from "@ant-design/icons-vue"
-import type { CascaderProps, MenuProps, TableColumnsType } from "ant-design-vue"
+import addEdit from "./addEdit.vue"
+import type { MenuProps, TableColumnsType, TableProps } from "ant-design-vue"
 import type { ShowSearchType } from "ant-design-vue/es/cascader"
 import type { SizeType } from "ant-design-vue/es/config-provider/context"
-import useUserListData from "./useUserListData"
+import { deleteUser } from "@/api"
+import utils from "@/utils/utils"
+import useUserListData from "./hooks/useUserListData"
+import useDepartmentData from "./hooks/useDepartmentData"
+import type { Dayjs } from "dayjs"
+type RangeValue = [Dayjs, Dayjs]
 
 /* 搜索功能相关数据方法 */
 const labelCol = { style: { width: "70px" } }
 // 折叠部分
 const isCollapse = ref(true)
 // 搜索表单数据
+const selectDate = ref<RangeValue>()
+const departmentValue = ref<string[]>([])
+// 处理日期选择变化
+const handleDateChange = (dates: any) => {
+  if (dates) {
+    // 处理日期
+    if (selectDate.value) {
+      searchObj.startDate = dates[0].format("YYYY-MM-DD")
+      searchObj.endDate = dates[1].format("YYYY-MM-DD")
+    }
+  } else {
+    searchObj.startDate = ""
+    searchObj.endDate = ""
+  }
+}
+// 处理部门选择变化
+const handleDepChange = (value: any) => {
+  // 处理部门选择
+  if (value) {
+    searchObj.departmentId = value[value?.length - 1]
+  } else {
+    searchObj.departmentId = ""
+  }
+}
 // 查询对象
-/* const searchObj = reactive<IUserListParam>({
-  id: modelRef.id,
-  nickname: modelRef.nickname,
-  username: modelRef.username,
-  mobile: modelRef.mobile,
-  email: modelRef.email,
-  sex: modelRef.sex,
-  // type:
-  // status:
-  pageNumber: currentPage.value,
-  pageSize: pageSize.value,
-  sort: "createTime",
-  order: "desc"
-  // startDate:
-  // endDate:
-}) */
 const searchObj = reactive<IUserListParam>({
   nickname: "",
-  department: undefined,
   mobile: "",
   email: "",
-  sex: undefined,
+  sex: "",
   username: "",
   id: "",
-  selectDate: undefined,
   departmentId: "",
   type: undefined,
   status: undefined,
@@ -267,41 +314,10 @@ const rulesRef = reactive({
     }
   ]
 })
+
 // 部门级联选择框
-const options: CascaderProps["options"] = [
-  {
-    value: "zhejiang",
-    label: "Zhejiang",
-    children: [
-      {
-        value: "hangzhou",
-        label: "Hangzhou",
-        children: [
-          {
-            value: "xihu",
-            label: "West Lake"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: "jiangsu",
-    label: "Jiangsu",
-    children: [
-      {
-        value: "nanjing",
-        label: "Nanjing",
-        children: [
-          {
-            value: "zhonghuamen",
-            label: "Zhong Hua Men"
-          }
-        ]
-      }
-    ]
-  }
-]
+const { depOptions, getFirstDepData, loadData } = useDepartmentData()
+getFirstDepData()
 const filter: ShowSearchType["filter"] = (inputValue, path) => {
   return path.some(
     (option) =>
@@ -317,15 +333,38 @@ const onSubmit = () => {
   validate()
     .then(() => {
       console.log(toRaw(searchObj))
-      debugger
+      // debugger
       getUserList(searchObj)
     })
     .catch((err) => {
       console.log("error", err)
     })
 }
+// 重置
+const handleReset = () => {
+  // 清空表单
+  resetFields()
+  departmentValue.value = []
+  selectDate.value = undefined
+  // 还原其他属性
+  searchObj.departmentId = ""
+  searchObj.pageNumber = 1
+  searchObj.pageSize = 10
+  searchObj.sort = "createTime"
+  searchObj.order = "desc"
+  searchObj.startDate = ""
+  searchObj.endDate = ""
+  getUserList(searchObj)
+}
 
 /* 按钮操作区功能 */
+// 刷新
+const isSpin = ref(false)
+const refresh = async () => {
+  isSpin.value = true
+  await getUserList(searchObj)
+  isSpin.value = false
+}
 // 搜索功能开关
 const isSearch = ref(true)
 // 信息提示开关
@@ -379,7 +418,8 @@ const columns: TableColumnsType<IUserInfoRes> = [
     title: "所属部门",
     dataIndex: "departmentId",
     key: "departmentId",
-    width: 120
+    width: 120,
+    customRender: ({ record }) => record.departmentTitle
   },
   {
     title: "手机",
@@ -406,10 +446,6 @@ const columns: TableColumnsType<IUserInfoRes> = [
     width: 110,
     filters: [
       {
-        text: "全部",
-        value: 2
-      },
-      {
         text: "普通用户",
         value: 0
       },
@@ -434,10 +470,6 @@ const columns: TableColumnsType<IUserInfoRes> = [
     width: 100,
     filters: [
       {
-        text: "全部",
-        value: 2
-      },
-      {
         text: "启用",
         value: 0
       },
@@ -459,6 +491,7 @@ const columns: TableColumnsType<IUserInfoRes> = [
     dataIndex: "createTime",
     key: "createTime",
     width: 180,
+    defaultSortOrder: "descend",
     sorter: (a: IUserInfoRes, b: IUserInfoRes) =>
       a.createTime.length - b.createTime.length
   },
@@ -471,22 +504,41 @@ const columns: TableColumnsType<IUserInfoRes> = [
   }
 ]
 // 选择框
+const selectedKeys = ref<IUserInfoRes["id"][]>([])
 const rowSelection = ref({
   checkStrictly: false,
-  onChange: (selectedRowKeys: (string | number)[], selectedRows: any[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows
-    )
-  },
-  onSelect: (record: any, selected: boolean, selectedRows: any[]) => {
-    console.log(record, selected, selectedRows)
-  },
-  onSelectAll: (selected: boolean, selectedRows: any[], changeRows: any[]) => {
-    console.log(selected, selectedRows, changeRows)
+  onChange: (selectedRowKeys: (string | number)[]) => {
+    selectedKeys.value = selectedRowKeys as string[]
   }
 })
+// 分页、排序、筛选变化时触发
+const handleTableChange: TableProps["onChange"] = (
+  pagination: any,
+  filters: any,
+  sorter: any
+) => {
+  // 设置排序
+  if (sorter.order) {
+    searchObj.sort = sorter.field
+    searchObj.order = sorter.order === "ascend" ? "asc" : "desc"
+  } else {
+    // 取消排序
+    searchObj.sort = ""
+    searchObj.order = ""
+  }
+  // 设置筛选
+  if (filters.type) {
+    searchObj.type = filters.type[0]
+  } else {
+    searchObj.type = undefined
+  }
+  if (filters.status) {
+    searchObj.status = filters.status[0]
+  } else {
+    searchObj.status = undefined
+  }
+  getUserList(searchObj)
+}
 
 /* 分页区功能 */
 // 页码或每页条数改变
@@ -501,6 +553,61 @@ const pageChange = (page: number, size: number) => {
 const { tableData, total, isLoading, getUserList } = useUserListData()
 
 getUserList(searchObj)
+
+// 删除用户
+const handleDelUser = async (id: string, name: string) => {
+  // 创建删除对话框
+  Modal.confirm({
+    title: "确认删除",
+    icon: createVNode(ExclamationCircleOutlined),
+    content: `您确认要删除用户 ${name} ?`,
+    async onOk() {
+      // 根据id删除用户
+      const [err, res] = await utils.awaitWrap(deleteUser({ ids: id }))
+      if (err || !res) return
+      // 删除成功
+      if (res.success) {
+        // 重新获取用户列表
+        getUserList(searchObj)
+        message.success("删除成功！")
+      } else {
+        message.error("删除失败！")
+      }
+    }
+  })
+}
+// 批量删除用户
+const handleDelUsers = async () => {
+  // 没有勾选
+  if (selectedKeys.value.length === 0) {
+    message.warning("您还未选择要删除的数据")
+    return
+  }
+  // 创建删除对话框
+  Modal.confirm({
+    title: "确认删除",
+    icon: createVNode(ExclamationCircleOutlined),
+    content: `您确认要删除所选的 ${selectedKeys.value.length} 条数据? ?`,
+    async onOk() {
+      // 根据id删除用户
+      const [err, res] = await utils.awaitWrap(
+        deleteUser({ ids: selectedKeys.value.toString() })
+      )
+      if (err || !res) return
+      // 删除成功
+      if (res.success) {
+        // 重新获取用户列表
+        getUserList(searchObj)
+        message.success("删除成功！")
+      } else {
+        message.error("删除失败！")
+      }
+    }
+  })
+}
+
+// 新增用户
+const addUserVisible = ref(false)
 </script>
 <style lang="scss" scoped>
 @import url("./userManage.scss");

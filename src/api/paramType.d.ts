@@ -40,8 +40,6 @@ interface IUserListParam {
   defaultRole?: number
   // 删除标志 默认0
   delFlag?: number
-  // 所选部门
-  department?: string[]
   // 所属部门id
   departmentId?: string
   // 所属部门名称
@@ -98,6 +96,4 @@ interface IUserListParam {
   updateTime?: string
   // 登录名
   username?: string
-  // 选择的时间
-  selectDate?: any
 }

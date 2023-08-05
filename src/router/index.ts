@@ -39,7 +39,7 @@ router.beforeEach(async (to, from, next) => {
     next({
       name: "HomeIndex"
     })
-  } else {
+  } else if (Cookie.get("userInfo") && name !== "Login") {
     // 未添加动态路由则先添加再跳转
     const appStore = useAppStore()
     const { setHasAddRoute, dynamicAddRoute, getMenuData, getDynamicRoutes } =
@@ -60,6 +60,8 @@ router.beforeEach(async (to, from, next) => {
       next()
     }
     // next()
+  } else {
+    next()
   }
 })
 
