@@ -8,6 +8,9 @@ import {
 const xbootUrl = "/xboot"
 // const myWebUrl = "my-web"
 
+// 文件上传接口
+export const uploadFile = `${xbootUrl}/upload/file`
+
 // 验证码渲染图片接口
 export const drawCodeImage = `${xbootUrl}/common/captcha/draw/`
 
@@ -64,11 +67,6 @@ export const registerReq = (params: IRegisterParam) => {
   return postNoAuthRequest<IData<object>>("/auth/register", params)
 }
 
-// 获取用户登录信息
-export const userInfo = () => {
-  return getRequest<IData<IUserInfoRes>>("/user/info", null)
-}
-
 // 获取菜单信息
 export const getMenuList = () => {
   return getRequest<IData<IMenuListRes[]>>("/permission/getMenuList", null)
@@ -77,6 +75,23 @@ export const getMenuList = () => {
 // 获取vaptcha配置
 export const getOtherSet = () => {
   return getRequest<IData<IOtherSetRes>>("/setting/other", null)
+}
+
+// 获取用户登录信息
+export const userInfo = () => {
+  return getRequest<IData<IUserInfoRes>>("/user/info", null)
+}
+// 获取全部角色数据
+export const getAllRoleList = () => {
+  return getRequest("/role/getAllList", null)
+}
+// 添加用户
+export const addUser = (params: IUserInfoRes) => {
+  return postRequest<IData<{}>>("/user/admin/add", params)
+}
+// 删除用户
+export const deleteUser = (params: { ids: string }) => {
+  return postRequest<IData<{}>>("/user/delByIds", params)
 }
 
 // 获取用户数据 多条件
@@ -104,7 +119,10 @@ export const loadDepartment = (
   )
 }
 
-// 删除用户
-export const deleteUser = (params: { ids: string }) => {
-  return postRequest<IData<{}>>("/user/delByIds", params)
+// 搜索部门
+export const searchDepartment = (params: {
+  title: string
+  openDataFilter?: boolean
+}) => {
+  return getRequest<IData<IDepRes[]>>("/department/search", params)
 }

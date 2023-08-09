@@ -16,6 +16,7 @@
     "ant-design-vue": "^3.2.15",
     "apexcharts": "^3.41.0",
     "axios": "^1.2.1",
+    "china-division": "^2.6.1",
     "date-fns": "^2.29.3",
     "js-cookie": "^3.0.1",
     "nprogress": "^0.2.0",

@@ -111,7 +111,7 @@
       <a-row justify="space-between" align="middle" class="btn-box">
         <!-- 左侧按钮 -->
         <div class="btn-left">
-          <a-button type="primary" @click="addUserVisible = true">
+          <a-button type="primary" @click="handleAdd">
             <template #icon><plus-outlined /></template>
             添加用户
           </a-button>
@@ -189,7 +189,7 @@
         >
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'operation'">
-              <a>编辑</a>
+              <a @click.prevent="handleEditUser(record)">编辑</a>
               <a-divider type="vertical" />
               <a>禁用</a>
               <a-divider type="vertical" />
@@ -230,11 +230,15 @@
         />
       </a-row>
     </a-card>
-    <add-edit v-model:visible="addUserVisible" :type="2"></add-edit>
+    <add-edit
+      v-model:visible="addUserVisible"
+      :type="type"
+      :data="editData"
+    ></add-edit>
   </div>
 </template>
 <script setup lang="ts">
-import { createVNode, h, reactive, ref, toRaw } from "vue"
+import { createVNode, reactive, ref, toRaw } from "vue"
 import { Form, message, Modal } from "ant-design-vue"
 import {
   SearchOutlined,
@@ -316,8 +320,7 @@ const rulesRef = reactive({
 })
 
 // 部门级联选择框
-const { depOptions, getFirstDepData, loadData } = useDepartmentData()
-getFirstDepData()
+const { depOptions, loadData } = useDepartmentData()
 const filter: ShowSearchType["filter"] = (inputValue, path) => {
   return path.some(
     (option) =>
@@ -606,8 +609,19 @@ const handleDelUsers = async () => {
   })
 }
 
-// 新增用户
+// 查看、编辑和新增功能
+const editData = ref()
+const type = ref(0)
 const addUserVisible = ref(false)
+// 新增用户
+const handleAdd = () => {
+  addUserVisible.value = true
+  type.value = 2
+}
+// 编辑用户
+const handleEditUser = (row: any) => {
+  editData.value = toRaw(row)
+}
 </script>
 <style lang="scss" scoped>
 @import url("./userManage.scss");
